@@ -1,0 +1,3 @@
+/tomcat.*
+/target
+/dependency-reduced-pom.xml

@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  Path:
+    Description: 'Some path'
+    Type: 'String'
+    Default: '/DynamoDBOperations'
+
+Resources:
+  LambdaFunctionOverHttps:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler::handleRequest
+      Runtime: java8
+      Policies:
+        - AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: !Ref Path
+      Events:
+        HttpPost:
+          Type: Api
+          Properties:
+            Path: !Sub '${Path}/DynamoDBManager'
+            Method: post
+  IncludeApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub "API between RTL-backend and RTL-frontend (${RTLEnv})"
+      StageName: Prod
+      DefinitionBody:
+        Fn::Transform:
+          Name: AWS::Include
+          Parameters:
+            Location: !Sub "${Path}/rtl-backend.yaml"
