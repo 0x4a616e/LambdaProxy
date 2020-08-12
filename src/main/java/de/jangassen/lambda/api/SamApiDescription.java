@@ -35,8 +35,11 @@ public class SamApiDescription implements ApiDescription {
     public Optional<RequestEvent> getRequestEvent(String path, String method) {
         PathContainer pathContainer = PathContainer.parsePath(path);
 
-        return samTemplate.Resources.entrySet().stream().map(r -> getRequestEvent(method, pathContainer, r.getKey(), r.getValue()))
-                .filter(Optional::isPresent).map(Optional::get).findFirst();
+        return samTemplate.Resources.entrySet().stream()
+                .map(r -> getRequestEvent(method, pathContainer, r.getKey(), r.getValue()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
     }
 
     private Optional<RequestEvent> getRequestEvent(String method, PathContainer pathContainer, String resourceName, SamTemplate.Resource resource) {
