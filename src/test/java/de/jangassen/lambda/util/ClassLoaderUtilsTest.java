@@ -24,7 +24,7 @@ class ClassLoaderUtilsTest {
     }
 
     @Test
-    public void testMoveToClassLoader() throws IOException, ClassNotFoundException {
+    public void testMoveToClassLoader() throws IOException {
         LambdaClassLoader urlClassLoader = new LambdaClassLoader(Collections.emptyList());
         urlClassLoader.addClass(TestClass.class);
         urlClassLoader.addClass(APIGatewayProxyRequestEvent.class);

@@ -1,22 +1,29 @@
 package de.jangassen.lambda.api;
 
-import de.jangassen.lambda.util.EventUtils;
+import de.jangassen.lambda.OpenApiParser;
+import de.jangassen.lambda.util.ParameterUtils;
 import de.jangassen.lambda.yaml.SamTemplate;
+import io.swagger.v3.oas.models.OpenAPI;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.server.PathContainer;
-import org.springframework.web.util.pattern.PathPattern;
-import org.springframework.web.util.pattern.PathPatternParser;
 
+import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SamApiDescription implements ApiDescription {
 
-    private final PathPatternParser pathPatternParser = new PathPatternParser();
+    private static final String FN_TRANSFORM = "Fn::Transform";
+    private static final String FN_SUB = "Fn::Sub";
+
+    private static final String AWS_INCLUDE = "AWS::Include";
+    
+    private static final String NAME = "Name";
+    private static final String PARAMETERS = "Parameters";
+    private static final String LOCATION = "Location";
+
     private final SamTemplate samTemplate;
 
     public SamApiDescription(SamTemplate samTemplate) {
@@ -24,59 +31,67 @@ public class SamApiDescription implements ApiDescription {
     }
 
     @Override
-    public Map<String, List<String>> listAPIs() {
-        return samTemplate.Resources.values().stream()
-                .flatMap(this::getAllEvents)
-                .map(e -> e.Properties)
-                .collect(Collectors.groupingBy(p -> p.Path, Collectors.mapping(v -> v.Method, Collectors.toList())));
+    public List<ApiMethod> getApiMethods() {
+        return getApiMethods(samTemplate);
     }
 
-    @Override
-    public Optional<RequestEvent> getRequestEvent(String path, String method) {
-        PathContainer pathContainer = PathContainer.parsePath(path);
-
+    private List<ApiMethod> getApiMethods(SamTemplate samTemplate) {
         return samTemplate.Resources.entrySet().stream()
-                .map(r -> getRequestEvent(method, pathContainer, r.getKey(), r.getValue()))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .findFirst();
+                .flatMap(r -> getApiMethods(r.getValue(), r.getKey()))
+                .collect(Collectors.toList());
     }
 
-    private Optional<RequestEvent> getRequestEvent(String method, PathContainer pathContainer, String resourceName, SamTemplate.Resource resource) {
-        return getAllEvents(resource)
-                .filter(event -> StringUtils.equalsIgnoreCase(method, event.Properties.Method))
-                .map(event -> createRequestEvent(pathContainer, event, resourceName, resource))
-                .filter(e -> e.getPathMatchInfo() != null)
-                .findFirst();
+    private Stream<ApiMethod> getApiMethods(SamTemplate.Resource resource, String resourceName) {
+        if (resource.Properties.Events == null && resource.Properties.DefinitionBody != null) {
+            return getOpenApiMethods(resource).stream();
+        } else if (resource.Properties.Events != null) {
+            return getTemplateMethods(resourceName, resource);
+        } else {
+            return Stream.empty();
+        }
     }
 
-    private Stream<SamTemplate.Event> getAllEvents(SamTemplate.Resource resource) {
+    private Stream<ApiMethod> getTemplateMethods(String resourceName, SamTemplate.Resource resource) {
+        return resource.Properties.Events.values()
+                .stream()
+                .map(event -> getApiMethod(resourceName, resource, event));
+    }
+
+    private ApiMethod getApiMethod(String resourceName, SamTemplate.Resource resource, SamTemplate.Event event) {
+        return new ApiMethod(resourceName, resource.Properties.CodeUri, resource.Properties.Handler, event.Properties.Path, event.Properties.Method);
+    }
+
+    private List<ApiMethod> getOpenApiMethods(SamTemplate.Resource resource) {
         if (ObjectUtils.isEmpty(resource.Properties.Events)) {
             if (!ObjectUtils.isEmpty(resource.Properties.DefinitionBody)) {
-                Object transform = resource.Properties.DefinitionBody.get("Fn::Transform");
-                if (transform instanceof Map) {
-                    String name = (String) ((Map<?, ?>) transform).get("Name");
-                    Object parameters = ((Map<?, ?>) transform).get("Parameters");
-                    if ("AWS::Include".equals(name) && parameters instanceof Map) {
-                        String value = (String) ((Map<?, ?>) parameters).get("Location");
-
-                        System.err.println(String.format("Including templates from '%s' is not supported.", value));
+                Object fnTransform = resource.Properties.DefinitionBody.get(FN_TRANSFORM);
+                if (fnTransform instanceof Map) {
+                    String name = (String) ((Map<?, ?>) fnTransform).get(NAME);
+                    Object parameters = ((Map<?, ?>) fnTransform).get(PARAMETERS);
+                    if (AWS_INCLUDE.equals(name) && parameters instanceof Map) {
+                        String value = getLocation(((Map<?, ?>) parameters).get(LOCATION));
+                        return getOpenApiMethods(value);
                     }
                 }
             }
-
-            return Stream.empty();
         }
-        return resource.Properties.Events.values().stream()
-                .filter(EventUtils::isAPIEvent);
+
+        return Collections.emptyList();
     }
 
-    private RequestEvent createRequestEvent(PathContainer pathContainer, SamTemplate.Event event, String resouceName, SamTemplate.Resource resource) {
-        String eventPath = event.Properties.Path;
-        String handler = resource.Properties.Handler;
+    private List<ApiMethod> getOpenApiMethods(String value) {
+        OpenAPI openAPI = new OpenApiParser().parse(new File(value).toPath());
+        OpenApiDescription openApiDescription = new OpenApiDescription(openAPI, samTemplate);
+        return openApiDescription.getApiMethods();
+    }
 
-        PathPattern eventPattern = pathPatternParser.parse(eventPath);
-        PathPattern.PathMatchInfo pathMatchInfo = eventPattern.matchAndExtract(pathContainer);
-        return new RequestEvent(resouceName, resource.Properties.CodeUri, handler, eventPath, pathMatchInfo);
+    private String getLocation(Object location) {
+        if (location instanceof Map) {
+            Object templatedLocationString = ((Map<?, ?>) location).get(FN_SUB);
+            if (templatedLocationString instanceof String) {
+                return ParameterUtils.resolve((String) templatedLocationString, samTemplate);
+            }
+        }
+        return String.valueOf(location);
     }
 }

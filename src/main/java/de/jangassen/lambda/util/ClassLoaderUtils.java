@@ -1,24 +1,16 @@
 package de.jangassen.lambda.util;
 
 import org.apache.commons.io.IOUtils;
-import org.springframework.core.ConfigurableObjectInputStream;
+import org.powermock.classloading.DeepCloner;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 public final class ClassLoaderUtils {
-    public static Object moveToClassLoader(ClassLoader classLoader, Object object) throws IOException, ClassNotFoundException {
-        return getObjectInClassLoader(classLoader, getBytes(object));
-    }
-
-    public static Object getObjectInClassLoader(ClassLoader classLoader, byte[] data) throws IOException, ClassNotFoundException {
-        return new ConfigurableObjectInputStream(new ByteArrayInputStream(data), classLoader).readObject();
-    }
-
-    public static byte[] getBytes(Object object) throws IOException {
-        ByteArrayOutputStream file = new ByteArrayOutputStream();
-        ObjectOutputStream out = new ObjectOutputStream(file);
-        out.writeObject(object);
-        return file.toByteArray();
+    public static Object moveToClassLoader(ClassLoader classLoader, Object object) {
+        DeepCloner deepCloner = new DeepCloner(classLoader);
+        return deepCloner.clone(object);
     }
 
     public static byte[] getClassBytes(Class<?> clazz) throws IOException {

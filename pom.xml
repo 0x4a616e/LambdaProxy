@@ -23,6 +23,7 @@
         <commons-io.version>2.6</commons-io.version>
         <junit-jupiter.version>5.4.2</junit-jupiter.version>
         <commons-text.version>1.8</commons-text.version>
+        <swagger-parser.version>2.0.21</swagger-parser.version>
     </properties>
 
     <build>
@@ -132,6 +133,11 @@
             <version>${aws-lambda-java-core.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.amazonaws.serverless</groupId>
+            <artifactId>aws-serverless-java-container-core</artifactId>
+            <version>1.5</version>
+        </dependency>
+        <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-lambda-java-events</artifactId>
             <version>${aws-lambda-java-events.version}</version>
@@ -150,6 +156,16 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-web</artifactId>
             <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-classloading-xstream</artifactId>
+            <version>2.0.7</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.parser.v3</groupId>
+            <artifactId>swagger-parser</artifactId>
+            <version>${swagger-parser.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

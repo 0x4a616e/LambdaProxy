@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DefaultLambdaMethodInvokerTest {
     @Test
@@ -16,7 +16,7 @@ public class DefaultLambdaMethodInvokerTest {
         DefaultLambdaMethodInvoker defaultLambdaMethodInvoker = new DefaultLambdaMethodInvoker(h -> DefaultLambdaMethodInvokerTest.class.getClassLoader());
 
         Request req = createTestRequest();
-        Object result = defaultLambdaMethodInvoker.invokeRequest(req, new RequestEvent("test", "test", TestClass.class.getName() + "::handleRequest", "resoure", null));
+        Object result = defaultLambdaMethodInvoker.invokeRequest(req, new RequestEvent("test", "test", TestClass.class.getName() + "::handleRequest", "resoure", null, null));
 
         assertEquals(TestClass.SUCCESS, result);
     }

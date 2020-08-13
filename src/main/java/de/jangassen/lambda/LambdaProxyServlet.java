@@ -1,18 +1,24 @@
 package de.jangassen.lambda;
 
-import de.jangassen.lambda.api.ApiDescription;
+import de.jangassen.lambda.api.ApiMethod;
 import de.jangassen.lambda.api.RequestEvent;
 import de.jangassen.lambda.loader.LambdaMethodInvoker;
+import de.jangassen.lambda.util.ApiMethodUtils;
+import de.jangassen.lambda.yaml.SamTemplate;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import javax.ws.rs.HttpMethod;
+import java.io.IOException;
+import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Optional;
 
 class LambdaProxyServlet extends HttpServlet {
 
@@ -22,21 +28,44 @@ class LambdaProxyServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(LambdaProxyServlet.class);
 
     private final LambdaMethodInvoker lambdaMethodInvoker;
-    private final ApiDescription apiDescription;
+    private final List<ApiMethod> apiMethods;
+    private final SamTemplate.Cors cors;
 
-    public LambdaProxyServlet(LambdaMethodInvoker lambdaMethodInvoker, ApiDescription apiDescription) {
-        this.apiDescription = apiDescription;
+    public LambdaProxyServlet(LambdaMethodInvoker lambdaMethodInvoker, SamTemplate.Cors cors, List<ApiMethod> apiMethods) {
+        this.cors = cors;
         this.lambdaMethodInvoker = lambdaMethodInvoker;
+        this.apiMethods = apiMethods;
 
-        apiDescription.listAPIs().entrySet().stream().forEach(e -> {
-            logger.info("* {} [{}]", e.getKey(), e.getValue().stream()
-                    .map(StringUtils::upperCase).collect(Collectors.joining(", ")));
-        });
+        apiMethods.forEach(e -> logger.info("* {}", e));
     }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) {
-        apiDescription.getRequestEvent(req.getPathInfo(), req.getMethod()).ifPresent(h -> handleRequest(req, resp, h));
+        Optional<RequestEvent> requestEvent = ApiMethodUtils.getRequestEvent(apiMethods, req.getPathInfo(), req.getMethod());
+        if (!requestEvent.isPresent() && cors != null && StringUtils.equalsIgnoreCase(req.getMethod(), HttpMethod.OPTIONS)) {
+            addCorsHeaders(resp);
+            resp.setStatus(HttpStatus.SC_OK);
+        } else {
+            requestEvent.ifPresent(event -> handleRequest(req, resp, event));
+        }
+    }
+
+    private void addCorsHeaders(HttpServletResponse resp) {
+        if (cors != null) {
+            if (cors.AllowHeaders != null) {
+                resp.addHeader("Access-Control-Allow-Headers", getCorsHeaderValue(cors.AllowHeaders));
+            }
+            if (cors.AllowMethods != null) {
+                resp.addHeader("Access-Control-Allow-Methods", getCorsHeaderValue(cors.AllowMethods));
+            }
+            if (cors.AllowOrigin != null) {
+                resp.addHeader("Access-Control-Allow-Origin", getCorsHeaderValue(cors.AllowOrigin));
+            }
+        }
+    }
+
+    private String getCorsHeaderValue(String headerValue) {
+        return StringUtils.strip(headerValue, "'");
     }
 
     private void handleRequest(HttpServletRequest req, HttpServletResponse resp, RequestEvent requestEvent) {
@@ -59,6 +88,7 @@ class LambdaProxyServlet extends HttpServlet {
 
     private void sendResponse(HttpServletResponse resp, Integer statusCode, String body) throws IOException {
         resp.setStatus(statusCode);
+        addCorsHeaders(resp);
         if (body != null) {
             Writer writer = resp.getWriter();
             writer.write(body);

@@ -11,13 +11,15 @@ public class RequestEvent {
     private final String codeUri;
     private final String handler;
     private final String path;
+    private final String resource;
     private final PathPattern.PathMatchInfo pathMatchInfo;
 
-    public RequestEvent(String resourceName, String codeUri, String handler, String path, PathPattern.PathMatchInfo pathMatchInfo) {
+    public RequestEvent(String resourceName, String codeUri, String handler, String path, String resource, PathPattern.PathMatchInfo pathMatchInfo) {
         this.resourceName = resourceName;
         this.codeUri = codeUri;
         this.handler = handler;
         this.path = path;
+        this.resource = resource;
         this.pathMatchInfo = pathMatchInfo;
     }
 
@@ -35,6 +37,10 @@ public class RequestEvent {
 
     public String getPath() {
         return path;
+    }
+
+    public String getResource() {
+        return resource;
     }
 
     public String getResourceName() {

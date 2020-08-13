@@ -1,0 +1,25 @@
+openapi: "3.0.3"
+info:
+  title: "Test API"
+  version: "1.0"
+
+paths:
+  /test/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      summary: "Test"
+      description: "Just a test"
+      responses:
+        201:
+          description: "Created final comment."
+
+      x-amazon-apigateway-integration:
+        type: aws_proxy
+        httpMethod: POST
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunctionOverHttps.Arn}/invocations

@@ -15,6 +15,7 @@ public class SamTemplate {
 
     public static class Globals {
         public Function Function;
+        public Api Api;
     }
 
     public static class Function {
@@ -48,6 +49,16 @@ public class SamTemplate {
 
     public static class Environment {
         public Map<String, Object> Variables;
+    }
+
+    public static class Api {
+        public Cors Cors;
+    }
+
+    public static class Cors {
+        public String AllowMethods;
+        public String AllowHeaders;
+        public String AllowOrigin;
     }
 }
 

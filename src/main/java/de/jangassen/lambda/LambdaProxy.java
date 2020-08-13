@@ -5,14 +5,17 @@ import de.jangassen.lambda.loader.CachedLambdaMethodInvoker;
 import de.jangassen.lambda.loader.LambdaClassLoaderFactory;
 import de.jangassen.lambda.loader.SamArtifactResolver;
 import de.jangassen.lambda.watcher.DeploymentChangeWatcher;
+import de.jangassen.lambda.yaml.SamTemplate;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.*;
-import java.nio.file.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.concurrent.Executors;
 
 public class LambdaProxy {
@@ -47,9 +50,25 @@ public class LambdaProxy {
     }
 
     private LambdaProxyServlet getLambdaServlet(Path rootPath, Path templateFile) throws FileNotFoundException {
+        SamTemplate samTemplate = templateParser.parse(templateFile);
+
+        final SamApiDescription apiDescription = new SamApiDescription(samTemplate);
         return new LambdaProxyServlet(
                 new CachedLambdaMethodInvoker(new LambdaClassLoaderFactory(new SamArtifactResolver(rootPath))),
-                new SamApiDescription(templateParser.parse(templateFile)));
+                getCorsSettings(samTemplate),
+                apiDescription.getApiMethods());
+    }
+
+    private SamTemplate.Cors getCorsSettings(SamTemplate samTemplate) {
+        SamTemplate.Globals globals = samTemplate.Globals;
+        if (globals == null) {
+            return null;
+        }
+        SamTemplate.Api api = globals.Api;
+        if (api == null) {
+            return null;
+        }
+        return api.Cors;
     }
 
     public void serve() {

@@ -4,7 +4,7 @@ import de.jangassen.lambda.api.RequestEvent;
 import de.jangassen.lambda.lambda.LambdaProxyContext;
 
 public class LambdaClassLoaderFactory implements ClassLoaderFactory {
-    private ArtifactResolver artifactResolver;
+    private final ArtifactResolver artifactResolver;
 
     public LambdaClassLoaderFactory(ArtifactResolver artifactResolver) {
         this.artifactResolver = artifactResolver;

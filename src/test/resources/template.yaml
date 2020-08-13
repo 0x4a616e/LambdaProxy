@@ -1,16 +1,24 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 
+Globals:
+  Api:
+    Cors:
+      AllowMethods: "'*'"
+      AllowHeaders: "'*'"
+      AllowOrigin: "'*'"
+
 Parameters:
   Path:
     Description: 'Some path'
     Type: 'String'
-    Default: '/DynamoDBOperations'
+    Default: 'src/test/resources'
 
 Resources:
   LambdaFunctionOverHttps:
     Type: AWS::Serverless::Function
     Properties:
+      CodeUri: my-code
       Handler: index.handler::handleRequest
       Runtime: java8
       Policies:
@@ -22,15 +30,15 @@ Resources:
         HttpPost:
           Type: Api
           Properties:
-            Path: !Sub '${Path}/DynamoDBManager'
+            Path: !Sub '/DynamoDBOperations/{id}'
             Method: post
   IncludeApi:
     Type: AWS::Serverless::Api
+    CodeUri: my-code
     Properties:
-      Name: !Sub "API between RTL-backend and RTL-frontend (${RTLEnv})"
-      StageName: Prod
+      Runtime: java8
       DefinitionBody:
         Fn::Transform:
           Name: AWS::Include
           Parameters:
-            Location: !Sub "${Path}/rtl-backend.yaml"
+            Location: !Sub "${Path}/openapi.yaml"
