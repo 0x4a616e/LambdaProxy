@@ -19,3 +19,23 @@ The second shortcoming is step-by-step debugging. You can enable step-by-step de
 cause `sam` to wait on every single API invocation until a debugger is attached. So again if you're working on a frontend
 application that performs various API requests, this can quickly become tedious. Unlike debugging a regular Java
 application, you cannot just let your application run and just put a breakpoint in on demand during testing.
+
+## Usage
+
+Build your lambda application using `sam`:
+
+    sam build
+    
+ This should compile everything into the `.aws-sam` folder.
+ 
+ Build `LambdaProxy` using maven:
+ 
+     mvn clean package
+     
+ Run your lambda application:
+ 
+     java -jar ./target/LambdaProxy-1.0-SNAPSHOT.jar ~/Workspace/my-lambda-function
+     
+ If you want to debug your lambda function, add the remote debugger agent:
+ 
+    java -agentlib:jdwp=transport=dt_socket,server=y,address=5858,suspend=n -jar ./target/LambdaProxy-1.0-SNAPSHOT.jar ~/Workspace/my-lambda-function
