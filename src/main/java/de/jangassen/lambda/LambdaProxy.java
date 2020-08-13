@@ -1,8 +1,9 @@
 package de.jangassen.lambda;
 
 import de.jangassen.lambda.api.SamApiDescription;
-import de.jangassen.lambda.loader.CachedLambdaMethodInvoker;
+import de.jangassen.lambda.loader.DefaultLambdaMethodInvoker;
 import de.jangassen.lambda.loader.LambdaClassLoaderFactory;
+import de.jangassen.lambda.loader.MethodInvocationContextCache;
 import de.jangassen.lambda.loader.SamArtifactResolver;
 import de.jangassen.lambda.watcher.DeploymentChangeWatcher;
 import de.jangassen.lambda.yaml.SamTemplate;
@@ -56,9 +57,10 @@ public class LambdaProxy {
 
         SamApiDescription apiDescription = new SamApiDescription(samTemplate, projectPath);
         LambdaClassLoaderFactory classLoaderFactory = new LambdaClassLoaderFactory(new SamArtifactResolver(rootPath));
-        CachedLambdaMethodInvoker lambdaMethodInvoker = new CachedLambdaMethodInvoker(classLoaderFactory);
+        DefaultLambdaMethodInvoker lambdaMethodInvoker = new DefaultLambdaMethodInvoker();
+        MethodInvocationContextCache methodInvocationContextCache = new MethodInvocationContextCache(classLoaderFactory);
 
-        return new LambdaProxyServlet(lambdaMethodInvoker, getCorsSettings(samTemplate), apiDescription.getApiMethods());
+        return new LambdaProxyServlet(lambdaMethodInvoker, methodInvocationContextCache, getCorsSettings(samTemplate), apiDescription.getApiMethods());
     }
 
     private SamTemplate.Cors getCorsSettings(SamTemplate samTemplate) {

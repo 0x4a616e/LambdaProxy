@@ -13,10 +13,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class DefaultLambdaMethodInvokerTest {
     @Test
     public void testSimpleInvocationInSameClassLoader() throws IOException, ReflectiveOperationException {
-        DefaultLambdaMethodInvoker defaultLambdaMethodInvoker = new DefaultLambdaMethodInvoker(h -> DefaultLambdaMethodInvokerTest.class.getClassLoader());
+        MethodInvocationContextCache methodInvocationContextCache = new MethodInvocationContextCache(h -> DefaultLambdaMethodInvokerTest.class.getClassLoader());
+        DefaultLambdaMethodInvoker defaultLambdaMethodInvoker = new DefaultLambdaMethodInvoker();
 
         Request req = createTestRequest();
-        Object result = defaultLambdaMethodInvoker.invokeRequest(req, new ApiInvocation("test", "test", TestClass.class.getName() + "::handleRequest", "resoure", null, null));
+        ApiInvocation apiInvocation = new ApiInvocation("test", "test", TestClass.class.getName() + "::handleRequest", "resoure", null, null);
+        Object result = defaultLambdaMethodInvoker.invokeRequest(req, apiInvocation, methodInvocationContextCache.getMethodInvocationContext(apiInvocation));
 
         assertEquals(TestClass.SUCCESS, result);
     }

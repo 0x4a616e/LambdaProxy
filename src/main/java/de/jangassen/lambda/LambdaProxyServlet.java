@@ -3,6 +3,8 @@ package de.jangassen.lambda;
 import de.jangassen.lambda.api.ApiInvocation;
 import de.jangassen.lambda.api.ApiMethod;
 import de.jangassen.lambda.loader.LambdaMethodInvoker;
+import de.jangassen.lambda.loader.MethodInvocationContext;
+import de.jangassen.lambda.loader.MethodInvocationContextProvider;
 import de.jangassen.lambda.util.ApiMethodUtils;
 import de.jangassen.lambda.yaml.SamTemplate;
 import org.apache.commons.lang3.StringUtils;
@@ -29,11 +31,13 @@ class LambdaProxyServlet extends HttpServlet {
 
     private final LambdaMethodInvoker lambdaMethodInvoker;
     private final List<ApiMethod> apiMethods;
+    private final MethodInvocationContextProvider methodInvocationContextProvider;
     private final SamTemplate.Cors cors;
 
-    public LambdaProxyServlet(LambdaMethodInvoker lambdaMethodInvoker, SamTemplate.Cors cors, List<ApiMethod> apiMethods) {
-        this.cors = cors;
+    public LambdaProxyServlet(LambdaMethodInvoker lambdaMethodInvoker, MethodInvocationContextProvider methodInvocationContextProvider, SamTemplate.Cors cors, List<ApiMethod> apiMethods) {
         this.lambdaMethodInvoker = lambdaMethodInvoker;
+        this.methodInvocationContextProvider = methodInvocationContextProvider;
+        this.cors = cors;
         this.apiMethods = apiMethods;
 
         apiMethods.forEach(e -> logger.info("* {}", e));
@@ -70,7 +74,8 @@ class LambdaProxyServlet extends HttpServlet {
 
     private void handleRequest(HttpServletRequest req, HttpServletResponse resp, ApiInvocation apiInvocation) {
         try {
-            Object result = lambdaMethodInvoker.invokeRequest(req, apiInvocation);
+            MethodInvocationContext methodInvocationContext = methodInvocationContextProvider.getMethodInvocationContext(apiInvocation);
+            Object result = lambdaMethodInvoker.invokeRequest(req, apiInvocation, methodInvocationContext);
             sendResponse(resp, getStatusCode(result), getBody(result));
         } catch (Exception e) {
             logger.error("Error handling request.", e);

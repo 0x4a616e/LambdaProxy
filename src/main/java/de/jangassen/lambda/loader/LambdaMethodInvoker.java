@@ -6,5 +6,5 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 public interface LambdaMethodInvoker {
-    Object invokeRequest(HttpServletRequest req, ApiInvocation apiInvocation) throws ReflectiveOperationException, IOException;
+    Object invokeRequest(HttpServletRequest req, ApiInvocation apiInvocation, MethodInvocationContext methodInvocationContext) throws ReflectiveOperationException, IOException;
 }
