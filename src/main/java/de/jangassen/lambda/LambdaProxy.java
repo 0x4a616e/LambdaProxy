@@ -28,10 +28,12 @@ public class LambdaProxy {
     private final Context context;
     private final Tomcat tomcat;
     private final TemplateParser templateParser;
+    private final Path projectPath;
 
     private Wrapper wrapper;
 
-    public LambdaProxy() {
+    public LambdaProxy(Path projectPath) {
+        this.projectPath = projectPath;
         tomcat = createTomcat();
         context = createContext(tomcat);
 
@@ -52,11 +54,11 @@ public class LambdaProxy {
     private LambdaProxyServlet getLambdaServlet(Path rootPath, Path templateFile) throws FileNotFoundException {
         SamTemplate samTemplate = templateParser.parse(templateFile);
 
-        final SamApiDescription apiDescription = new SamApiDescription(samTemplate);
-        return new LambdaProxyServlet(
-                new CachedLambdaMethodInvoker(new LambdaClassLoaderFactory(new SamArtifactResolver(rootPath))),
-                getCorsSettings(samTemplate),
-                apiDescription.getApiMethods());
+        SamApiDescription apiDescription = new SamApiDescription(samTemplate, projectPath);
+        LambdaClassLoaderFactory classLoaderFactory = new LambdaClassLoaderFactory(new SamArtifactResolver(rootPath));
+        CachedLambdaMethodInvoker lambdaMethodInvoker = new CachedLambdaMethodInvoker(classLoaderFactory);
+
+        return new LambdaProxyServlet(lambdaMethodInvoker, getCorsSettings(samTemplate), apiDescription.getApiMethods());
     }
 
     private SamTemplate.Cors getCorsSettings(SamTemplate samTemplate) {
@@ -91,14 +93,14 @@ public class LambdaProxy {
     }
 
     public static void main(String[] args) throws IOException {
-        if (args.length == 0 || StringUtils.isBlank(args[0])) {
-            System.err.println("Usage: " + LambdaProxy.class.getSimpleName() + " <project path>");
-            return;
-        }
+        String projectPathString = (args.length == 0 || StringUtils.isBlank(args[0]))
+                ? System.getProperty("user.dir")
+                : args[0];
 
-        Path samBuildPath = new File(args[0]).toPath().resolve(AWS_SAM).resolve("build");
+        Path projectPath = new File(projectPathString).toPath();
+        Path samBuildPath = projectPath.resolve(AWS_SAM).resolve("build");
 
-        LambdaProxy lambdaProxy = new LambdaProxy();
+        LambdaProxy lambdaProxy = new LambdaProxy(projectPath);
         startChangeWatcher(samBuildPath, lambdaProxy);
         lambdaProxy.deploy(samBuildPath);
         lambdaProxy.serve();

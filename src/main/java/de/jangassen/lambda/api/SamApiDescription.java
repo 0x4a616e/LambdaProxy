@@ -7,6 +7,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -19,15 +20,17 @@ public class SamApiDescription implements ApiDescription {
     private static final String FN_SUB = "Fn::Sub";
 
     private static final String AWS_INCLUDE = "AWS::Include";
-    
+
     private static final String NAME = "Name";
     private static final String PARAMETERS = "Parameters";
     private static final String LOCATION = "Location";
 
     private final SamTemplate samTemplate;
+    private final Path projectPath;
 
-    public SamApiDescription(SamTemplate samTemplate) {
+    public SamApiDescription(SamTemplate samTemplate, Path projectPath) {
         this.samTemplate = samTemplate;
+        this.projectPath = projectPath;
     }
 
     @Override
@@ -69,8 +72,8 @@ public class SamApiDescription implements ApiDescription {
                     String name = (String) ((Map<?, ?>) fnTransform).get(NAME);
                     Object parameters = ((Map<?, ?>) fnTransform).get(PARAMETERS);
                     if (AWS_INCLUDE.equals(name) && parameters instanceof Map) {
-                        String value = getLocation(((Map<?, ?>) parameters).get(LOCATION));
-                        return getOpenApiMethods(value);
+                        String location = getLocation(((Map<?, ?>) parameters).get(LOCATION));
+                        return getOpenApiMethods(location);
                     }
                 }
             }
@@ -79,8 +82,12 @@ public class SamApiDescription implements ApiDescription {
         return Collections.emptyList();
     }
 
-    private List<ApiMethod> getOpenApiMethods(String value) {
-        OpenAPI openAPI = new OpenApiParser().parse(new File(value).toPath());
+    private List<ApiMethod> getOpenApiMethods(String location) {
+        Path absolutePath = (location.startsWith("/"))
+                ? new File(location).toPath()
+                : projectPath.resolve(location);
+
+        OpenAPI openAPI = new OpenApiParser().parse(absolutePath);
         OpenApiDescription openApiDescription = new OpenApiDescription(openAPI, samTemplate);
         return openApiDescription.getApiMethods();
     }

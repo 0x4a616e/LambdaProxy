@@ -6,8 +6,10 @@ import de.jangassen.lambda.api.RequestEvent;
 import de.jangassen.lambda.api.SamApiDescription;
 import de.jangassen.lambda.util.ApiMethodUtils;
 import de.jangassen.lambda.yaml.SamTemplate;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URL;
@@ -22,13 +24,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TemplateParserTest {
 
-    @Test
-    public void testParseSimpleTemplate() throws FileNotFoundException {
+    private ApiDescription lambdaEventResolver;
+
+    @BeforeEach
+    public void init() throws FileNotFoundException {
         Path templateFile = getTestResourcePath();
         SamTemplate samTemplate = new TemplateParser().parse(templateFile);
-        ApiDescription lambdaEventResolver = new SamApiDescription(
-                samTemplate);
+        lambdaEventResolver = new SamApiDescription(samTemplate, getCurrentPath());
+    }
 
+    @Test
+    public void testParseSimpleTemplate() {
         List<ApiMethod> apiMethods = lambdaEventResolver.getApiMethods();
         Optional<RequestEvent> event = ApiMethodUtils.getRequestEvent(apiMethods, "/DynamoDBOperations/DynamoDBManager", "post");
 
@@ -41,11 +47,7 @@ public class TemplateParserTest {
     }
 
     @Test
-    public void testParseTemplateWithOpenApi() throws FileNotFoundException {
-        Path templateFile = getTestResourcePath();
-        ApiDescription lambdaEventResolver = new SamApiDescription(
-                new TemplateParser().parse(templateFile));
-
+    public void testParseTemplateWithOpenApi() {
         List<ApiMethod> apiMethods = lambdaEventResolver.getApiMethods();
         Optional<RequestEvent> event = ApiMethodUtils.getRequestEvent(apiMethods, "/test/123", "post");
 
@@ -55,6 +57,10 @@ public class TemplateParserTest {
         assertEquals("/test/{id}", event.get().getResource());
         assertEquals("index.handler", event.get().getHandlerClass());
         assertEquals("handleRequest", event.get().getHandlerMethod());
+    }
+
+    private Path getCurrentPath() {
+        return new File(System.getProperty("user.dir")).toPath();
     }
 
     private Path getTestResourcePath() {
