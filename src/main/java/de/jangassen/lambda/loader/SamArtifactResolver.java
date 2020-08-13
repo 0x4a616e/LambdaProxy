@@ -1,6 +1,6 @@
 package de.jangassen.lambda.loader;
 
-import de.jangassen.lambda.api.RequestEvent;
+import de.jangassen.lambda.api.ApiInvocation;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -20,7 +20,8 @@ public class SamArtifactResolver implements ArtifactResolver {
         this.rootPath = rootPath;
     }
 
-    public List<URL> resolve(RequestEvent handler) {
+    @Override
+    public List<URL> resolve(ApiInvocation handler) {
         Path samBuildPath = rootPath.resolve(handler.getResourceName());
 
         List<URL> paths = getLibs(samBuildPath.resolve(LIB));
@@ -29,10 +30,10 @@ public class SamArtifactResolver implements ArtifactResolver {
     }
 
     private List<URL> getLibs(Path libPath) {
-        try (Stream<Path> files = Files.list(libPath)){
-             return files.map(this::toURL).collect(Collectors.toList());
+        try (Stream<Path> files = Files.list(libPath)) {
+            return files.map(this::toURL).collect(Collectors.toList());
         } catch (IOException e) {
-           throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
     }
 

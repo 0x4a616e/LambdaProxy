@@ -1,8 +1,8 @@
 package de.jangassen.lambda;
 
 import de.jangassen.lambda.api.ApiDescription;
+import de.jangassen.lambda.api.ApiInvocation;
 import de.jangassen.lambda.api.ApiMethod;
-import de.jangassen.lambda.api.RequestEvent;
 import de.jangassen.lambda.api.SamApiDescription;
 import de.jangassen.lambda.util.ApiMethodUtils;
 import de.jangassen.lambda.yaml.SamTemplate;
@@ -36,7 +36,7 @@ public class TemplateParserTest {
     @Test
     public void testParseSimpleTemplate() {
         List<ApiMethod> apiMethods = lambdaEventResolver.getApiMethods();
-        Optional<RequestEvent> event = ApiMethodUtils.getRequestEvent(apiMethods, "/DynamoDBOperations/DynamoDBManager", "post");
+        Optional<ApiInvocation> event = ApiMethodUtils.getRequestEvent(apiMethods, "/DynamoDBOperations/DynamoDBManager", "post");
 
         assertTrue(event.isPresent());
         assertEquals("LambdaFunctionOverHttps", event.get().getResourceName());
@@ -49,7 +49,7 @@ public class TemplateParserTest {
     @Test
     public void testParseTemplateWithOpenApi() {
         List<ApiMethod> apiMethods = lambdaEventResolver.getApiMethods();
-        Optional<RequestEvent> event = ApiMethodUtils.getRequestEvent(apiMethods, "/test/123", "post");
+        Optional<ApiInvocation> event = ApiMethodUtils.getRequestEvent(apiMethods, "/test/123", "post");
 
         assertTrue(event.isPresent());
         assertEquals("LambdaFunctionOverHttps", event.get().getResourceName());

@@ -1,7 +1,7 @@
 package de.jangassen.lambda.lambda;
 
 import com.amazonaws.serverless.proxy.model.*;
-import de.jangassen.lambda.api.RequestEvent;
+import de.jangassen.lambda.api.ApiInvocation;
 import de.jangassen.lambda.util.RequestUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 
 public class AwsProxyRequestBuilder {
     private HttpServletRequest servletRequest;
-    private RequestEvent requestEvent;
+    private ApiInvocation apiInvocation;
 
     private AwsProxyRequestBuilder() {
     }
@@ -25,19 +25,19 @@ public class AwsProxyRequestBuilder {
         return this;
     }
 
-    public AwsProxyRequestBuilder withEvent(RequestEvent requestEvent) {
-        this.requestEvent = requestEvent;
+    public AwsProxyRequestBuilder withEvent(ApiInvocation apiInvocation) {
+        this.apiInvocation = apiInvocation;
         return this;
     }
 
     public AwsProxyRequest build() throws IOException {
         AwsProxyRequest event = new AwsProxyRequest();
         event.setMultiValueHeaders(toMultivaluedTreeMap(RequestUtils.getHeaders(servletRequest), Headers::new));
-        event.setPath(requestEvent.getPath());
-        event.setResource(requestEvent.getPath());
+        event.setPath(apiInvocation.getPath());
+        event.setResource(apiInvocation.getPath());
         event.setHttpMethod(servletRequest.getMethod());
-        if (requestEvent.getPathMatchInfo() != null) {
-            event.setPathParameters(requestEvent.getPathMatchInfo().getUriVariables());
+        if (apiInvocation.getPathMatchInfo() != null) {
+            event.setPathParameters(apiInvocation.getPathMatchInfo().getUriVariables());
         }
         event.setBody(RequestUtils.getRequestEntity(servletRequest));
         event.setMultiValueQueryStringParameters(toMultivaluedTreeMap(RequestUtils.getQueryParameters(servletRequest)));

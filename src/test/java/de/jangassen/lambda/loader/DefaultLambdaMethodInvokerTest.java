@@ -1,6 +1,6 @@
 package de.jangassen.lambda.loader;
 
-import de.jangassen.lambda.api.RequestEvent;
+import de.jangassen.lambda.api.ApiInvocation;
 import de.jangassen.lambda.util.TestClass;
 import org.apache.catalina.connector.Request;
 import org.apache.coyote.http11.filters.VoidInputFilter;
@@ -16,7 +16,7 @@ public class DefaultLambdaMethodInvokerTest {
         DefaultLambdaMethodInvoker defaultLambdaMethodInvoker = new DefaultLambdaMethodInvoker(h -> DefaultLambdaMethodInvokerTest.class.getClassLoader());
 
         Request req = createTestRequest();
-        Object result = defaultLambdaMethodInvoker.invokeRequest(req, new RequestEvent("test", "test", TestClass.class.getName() + "::handleRequest", "resoure", null, null));
+        Object result = defaultLambdaMethodInvoker.invokeRequest(req, new ApiInvocation("test", "test", TestClass.class.getName() + "::handleRequest", "resoure", null, null));
 
         assertEquals(TestClass.SUCCESS, result);
     }

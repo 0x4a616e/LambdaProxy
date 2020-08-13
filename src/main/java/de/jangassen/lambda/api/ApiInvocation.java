@@ -3,7 +3,7 @@ package de.jangassen.lambda.api;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.util.pattern.PathPattern;
 
-public class RequestEvent {
+public class ApiInvocation {
 
     public static final String SEPARATOR_CHARS = "::";
 
@@ -14,7 +14,7 @@ public class RequestEvent {
     private final String resource;
     private final PathPattern.PathMatchInfo pathMatchInfo;
 
-    public RequestEvent(String resourceName, String codeUri, String handler, String path, String resource, PathPattern.PathMatchInfo pathMatchInfo) {
+    public ApiInvocation(String resourceName, String codeUri, String handler, String path, String resource, PathPattern.PathMatchInfo pathMatchInfo) {
         this.resourceName = resourceName;
         this.codeUri = codeUri;
         this.handler = handler;

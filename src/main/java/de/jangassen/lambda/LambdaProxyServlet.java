@@ -1,7 +1,7 @@
 package de.jangassen.lambda;
 
+import de.jangassen.lambda.api.ApiInvocation;
 import de.jangassen.lambda.api.ApiMethod;
-import de.jangassen.lambda.api.RequestEvent;
 import de.jangassen.lambda.loader.LambdaMethodInvoker;
 import de.jangassen.lambda.util.ApiMethodUtils;
 import de.jangassen.lambda.yaml.SamTemplate;
@@ -41,7 +41,7 @@ class LambdaProxyServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) {
-        Optional<RequestEvent> requestEvent = ApiMethodUtils.getRequestEvent(apiMethods, req.getPathInfo(), req.getMethod());
+        Optional<ApiInvocation> requestEvent = ApiMethodUtils.getRequestEvent(apiMethods, req.getPathInfo(), req.getMethod());
         if (!requestEvent.isPresent() && cors != null && StringUtils.equalsIgnoreCase(req.getMethod(), HttpMethod.OPTIONS)) {
             addCorsHeaders(resp);
             resp.setStatus(HttpStatus.SC_OK);
@@ -68,9 +68,9 @@ class LambdaProxyServlet extends HttpServlet {
         return StringUtils.strip(headerValue, "'");
     }
 
-    private void handleRequest(HttpServletRequest req, HttpServletResponse resp, RequestEvent requestEvent) {
+    private void handleRequest(HttpServletRequest req, HttpServletResponse resp, ApiInvocation apiInvocation) {
         try {
-            Object result = lambdaMethodInvoker.invokeRequest(req, requestEvent);
+            Object result = lambdaMethodInvoker.invokeRequest(req, apiInvocation);
             sendResponse(resp, getStatusCode(result), getBody(result));
         } catch (Exception e) {
             logger.error("Error handling request.", e);

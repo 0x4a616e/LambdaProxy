@@ -1,6 +1,6 @@
 package de.jangassen.lambda.loader;
 
-import de.jangassen.lambda.api.RequestEvent;
+import de.jangassen.lambda.api.ApiInvocation;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -23,13 +23,13 @@ public class CachedLambdaMethodInvoker extends DefaultLambdaMethodInvoker {
     }
 
     @Override
-    protected Method getHandlerMethod(RequestEvent requestEvent, Class<?> handlerClass, Class<?> parameterClass) {
+    protected Method getHandlerMethod(ApiInvocation apiInvocation, Class<?> handlerClass, Class<?> parameterClass) {
         return handlerMethods.computeIfAbsent(Arrays.asList(handlerClass, parameterClass),
-                key -> super.getHandlerMethod(requestEvent, handlerClass, parameterClass));
+                key -> super.getHandlerMethod(apiInvocation, handlerClass, parameterClass));
     }
 
     @Override
-    protected ClassLoader getClassLoader(RequestEvent requestEvent) {
-        return classLoaders.computeIfAbsent(requestEvent.getCodeUri(), codeUri -> super.getClassLoader(requestEvent));
+    protected ClassLoader getClassLoader(ApiInvocation apiInvocation) {
+        return classLoaders.computeIfAbsent(apiInvocation.getCodeUri(), codeUri -> super.getClassLoader(apiInvocation));
     }
 }

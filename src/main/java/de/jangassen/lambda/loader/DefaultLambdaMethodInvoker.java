@@ -3,7 +3,7 @@ package de.jangassen.lambda.loader;
 import com.amazonaws.serverless.proxy.model.AwsProxyRequest;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import de.jangassen.lambda.api.RequestEvent;
+import de.jangassen.lambda.api.ApiInvocation;
 import de.jangassen.lambda.lambda.APIGatewayProxyRequestEventBuilder;
 import de.jangassen.lambda.lambda.AwsProxyRequestBuilder;
 import de.jangassen.lambda.lambda.LambdaProxyContext;
@@ -23,52 +23,52 @@ public class DefaultLambdaMethodInvoker implements LambdaMethodInvoker {
     }
 
     @Override
-    public Object invokeRequest(HttpServletRequest req, RequestEvent requestEvent) throws ReflectiveOperationException, IOException {
+    public Object invokeRequest(HttpServletRequest req, ApiInvocation apiInvocation) throws ReflectiveOperationException, IOException {
         try {
-            return invoke(requestEvent, getAPIGatewayProxyRequestEvent(req, requestEvent));
+            return invoke(apiInvocation, getAPIGatewayProxyRequestEvent(req, apiInvocation));
         } catch (NoSuchMethodException e) {
-            return invoke(requestEvent, getAwsProxyRequest(req, requestEvent));
+            return invoke(apiInvocation, getAwsProxyRequest(req, apiInvocation));
         }
     }
 
-    private Object invoke(RequestEvent requestEvent, Object request) throws ReflectiveOperationException {
-        MethodInvocationContext methodInvocationContext = getMethodInvocationContext(requestEvent, request.getClass());
-        LambdaProxyContext context = getContext(requestEvent);
+    private Object invoke(ApiInvocation apiInvocation, Object request) throws ReflectiveOperationException {
+        MethodInvocationContext methodInvocationContext = getMethodInvocationContext(apiInvocation, request.getClass());
+        LambdaProxyContext context = getContext(apiInvocation);
 
         return invokeUsingClassLoader(methodInvocationContext, context, request, methodInvocationContext.getClassLoader());
     }
 
-    private LambdaProxyContext getContext(RequestEvent requestEvent) {
-        return new LambdaProxyContext(requestEvent.getResourceName());
+    private LambdaProxyContext getContext(ApiInvocation apiInvocation) {
+        return new LambdaProxyContext(apiInvocation.getResourceName());
     }
 
-    private APIGatewayProxyRequestEvent getAPIGatewayProxyRequestEvent(HttpServletRequest req, RequestEvent requestEvent) throws IOException {
+    private APIGatewayProxyRequestEvent getAPIGatewayProxyRequestEvent(HttpServletRequest req, ApiInvocation apiInvocation) throws IOException {
         return APIGatewayProxyRequestEventBuilder.start()
-                .withEvent(requestEvent)
+                .withEvent(apiInvocation)
                 .withRequest(req)
                 .build();
     }
 
-    private AwsProxyRequest getAwsProxyRequest(HttpServletRequest req, RequestEvent requestEvent) throws IOException {
+    private AwsProxyRequest getAwsProxyRequest(HttpServletRequest req, ApiInvocation apiInvocation) throws IOException {
         return AwsProxyRequestBuilder.start()
-                .withEvent(requestEvent)
+                .withEvent(apiInvocation)
                 .withRequest(req)
                 .build();
     }
 
-    protected MethodInvocationContext getMethodInvocationContext(RequestEvent requestEvent, Class<?> parameterClass) throws ClassNotFoundException {
-        ClassLoader classLoader = getClassLoader(requestEvent);
+    protected MethodInvocationContext getMethodInvocationContext(ApiInvocation apiInvocation, Class<?> parameterClass) throws ClassNotFoundException {
+        ClassLoader classLoader = getClassLoader(apiInvocation);
         Thread.currentThread().setContextClassLoader(classLoader);
 
-        Class<?> handlerClass = classLoader.loadClass(requestEvent.getHandlerClass());
-        Method handlerMethod = getHandlerMethod(requestEvent, handlerClass, parameterClass);
+        Class<?> handlerClass = classLoader.loadClass(apiInvocation.getHandlerClass());
+        Method handlerMethod = getHandlerMethod(apiInvocation, handlerClass, parameterClass);
         Object handlerInstance = getHandlerInstance(handlerClass);
 
         return new MethodInvocationContext(handlerMethod, handlerInstance, classLoader);
     }
 
-    protected ClassLoader getClassLoader(RequestEvent requestEvent) {
-        return classLoaderFactory.create(requestEvent);
+    protected ClassLoader getClassLoader(ApiInvocation apiInvocation) {
+        return classLoaderFactory.create(apiInvocation);
     }
 
     protected Object getHandlerInstance(Class<?> handlerClass) {
@@ -79,12 +79,12 @@ public class DefaultLambdaMethodInvoker implements LambdaMethodInvoker {
         }
     }
 
-    protected Method getHandlerMethod(RequestEvent requestEvent, Class<?> handlerClass, Class<?> parameterClass) {
+    protected Method getHandlerMethod(ApiInvocation apiInvocation, Class<?> handlerClass, Class<?> parameterClass) {
         try {
             Class<?> eventClass = handlerClass.getClassLoader().loadClass(parameterClass.getName());
             Class<?> proxyClass = handlerClass.getClassLoader().loadClass(Context.class.getName());
 
-            return handlerClass.getMethod(requestEvent.getHandlerMethod(), eventClass, proxyClass);
+            return handlerClass.getMethod(apiInvocation.getHandlerMethod(), eventClass, proxyClass);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }

@@ -1,6 +1,6 @@
 package de.jangassen.lambda.loader;
 
-import de.jangassen.lambda.api.RequestEvent;
+import de.jangassen.lambda.api.ApiInvocation;
 import de.jangassen.lambda.lambda.LambdaProxyContext;
 
 public class LambdaClassLoaderFactory implements ClassLoaderFactory {
@@ -11,7 +11,7 @@ public class LambdaClassLoaderFactory implements ClassLoaderFactory {
     }
 
     @Override
-    public ClassLoader create(RequestEvent handler) {
+    public ClassLoader create(ApiInvocation handler) {
         try {
             LambdaClassLoader lambdaClassLoader = new LambdaClassLoader(artifactResolver.resolve(handler));
             lambdaClassLoader.addClass(LambdaProxyContext.class);
