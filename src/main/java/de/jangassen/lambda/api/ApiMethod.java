@@ -2,27 +2,14 @@ package de.jangassen.lambda.api;
 
 import java.util.StringJoiner;
 
-public class ApiMethod {
-    private final String resourceName;
-    private final String codeUri;
-    private final String handler;
+public class ApiMethod extends ApiResource {
     private final String pathPattern;
     private final String method;
 
     public ApiMethod(String resourceName, String codeUri, String handler, String pathPattern, String method) {
-        this.resourceName = resourceName;
-        this.codeUri = codeUri;
-        this.handler = handler;
+        super(resourceName, codeUri, handler);
         this.pathPattern = pathPattern;
         this.method = method;
-    }
-
-    public String getResourceName() {
-        return resourceName;
-    }
-
-    public String getCodeUri() {
-        return codeUri;
     }
 
     public String getHandler() {
