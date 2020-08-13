@@ -1,6 +1,6 @@
 package de.jangassen.lambda.loader;
 
-import de.jangassen.lambda.api.ApiInvocation;
+import de.jangassen.lambda.api.ApiResource;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -21,7 +21,7 @@ public class SamArtifactResolver implements ArtifactResolver {
     }
 
     @Override
-    public List<URL> resolve(ApiInvocation handler) {
+    public List<URL> resolve(ApiResource handler) {
         Path samBuildPath = rootPath.resolve(handler.getResourceName());
 
         List<URL> paths = getLibs(samBuildPath.resolve(LIB));

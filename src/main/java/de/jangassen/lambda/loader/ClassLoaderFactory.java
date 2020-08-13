@@ -1,8 +1,8 @@
 package de.jangassen.lambda.loader;
 
-import de.jangassen.lambda.api.ApiInvocation;
+import de.jangassen.lambda.api.ApiResource;
 
 @FunctionalInterface
 public interface ClassLoaderFactory {
-    ClassLoader create(ApiInvocation handler);
+    ClassLoader create(ApiResource handler);
 }
