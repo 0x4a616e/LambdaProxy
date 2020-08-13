@@ -1,5 +1,6 @@
 package de.jangassen.lambda.api;
 
+import de.jangassen.lambda.util.ResourceUtils;
 import de.jangassen.lambda.yaml.SamTemplate;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -68,7 +69,7 @@ public class OpenApiDescription {
         if (matcher.matches()) {
             String resourceName = matcher.group(1);
             SamTemplate.Resource resource = samTemplate.Resources.get(resourceName);
-            if (resource != null) {
+            if (resource != null && ResourceUtils.isJava8Runtime(resource)) {
                 return Optional.of(new ApiMethod(resourceName, resource.Properties.CodeUri, resource.Properties.Handler, pathPattern, e.getKey()));
             }
         }
