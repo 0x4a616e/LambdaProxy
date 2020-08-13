@@ -39,3 +39,5 @@ Build your lambda application using `sam`:
  If you want to debug your lambda function, add the remote debugger agent:
  
     java -agentlib:jdwp=transport=dt_socket,server=y,address=5858,suspend=n -jar ./target/LambdaProxy-1.0-SNAPSHOT.jar ~/Workspace/my-lambda-function
+
+When you rebuild you lambda function, `LambdaProxy` will pick up the changes automatically and reload the API.
