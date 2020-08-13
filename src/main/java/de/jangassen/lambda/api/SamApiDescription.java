@@ -1,10 +1,12 @@
 package de.jangassen.lambda.api;
 
 import de.jangassen.lambda.OpenApiParser;
+import de.jangassen.lambda.util.EventUtils;
 import de.jangassen.lambda.util.ParameterUtils;
 import de.jangassen.lambda.yaml.SamTemplate;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -24,6 +26,7 @@ public class SamApiDescription implements ApiDescription {
     private static final String NAME = "Name";
     private static final String PARAMETERS = "Parameters";
     private static final String LOCATION = "Location";
+    private static final String JAVA_8 = "java8";
 
     private final SamTemplate samTemplate;
     private final Path projectPath;
@@ -39,9 +42,15 @@ public class SamApiDescription implements ApiDescription {
     }
 
     private List<ApiMethod> getApiMethods(SamTemplate samTemplate) {
-        return samTemplate.Resources.entrySet().stream()
+        return samTemplate.Resources.entrySet()
+                .stream()
+                .filter(this::isJava8Runtime)
                 .flatMap(r -> getApiMethods(r.getValue(), r.getKey()))
                 .collect(Collectors.toList());
+    }
+
+    private boolean isJava8Runtime(Map.Entry<String, SamTemplate.Resource> r) {
+        return StringUtils.equalsIgnoreCase(JAVA_8, r.getValue().Properties.Runtime);
     }
 
     private Stream<ApiMethod> getApiMethods(SamTemplate.Resource resource, String resourceName) {
@@ -57,6 +66,7 @@ public class SamApiDescription implements ApiDescription {
     private Stream<ApiMethod> getTemplateMethods(String resourceName, SamTemplate.Resource resource) {
         return resource.Properties.Events.values()
                 .stream()
+                .filter(EventUtils::isAPIEvent)
                 .map(event -> getApiMethod(resourceName, resource, event));
     }
 
