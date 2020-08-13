@@ -7,13 +7,14 @@ import org.apache.coyote.http11.filters.VoidInputFilter;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DefaultLambdaMethodInvokerTest {
     @Test
     public void testSimpleInvocationInSameClassLoader() throws IOException, ReflectiveOperationException {
-        MethodInvocationContextCache methodInvocationContextCache = new MethodInvocationContextCache(h -> DefaultLambdaMethodInvokerTest.class.getClassLoader());
+        MethodInvocationContextCache methodInvocationContextCache = new MethodInvocationContextCache(h -> DefaultLambdaMethodInvokerTest.class.getClassLoader(), Duration.ofSeconds(10));
         DefaultLambdaMethodInvoker defaultLambdaMethodInvoker = new DefaultLambdaMethodInvoker();
 
         Request req = createTestRequest();

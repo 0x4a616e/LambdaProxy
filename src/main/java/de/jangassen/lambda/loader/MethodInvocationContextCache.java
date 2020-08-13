@@ -1,21 +1,32 @@
 package de.jangassen.lambda.loader;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import de.jangassen.lambda.api.ApiResource;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import javax.annotation.Nonnull;
+import java.time.Duration;
 
 public class MethodInvocationContextCache implements MethodInvocationContextProvider {
-    private final ClassLoaderFactory classLoaderFactory;
+    private final LoadingCache<ApiResource, MethodInvocationContext> cache;
 
-    private final Map<ApiResource, MethodInvocationContext> cache = new ConcurrentHashMap<>();
-
-    public MethodInvocationContextCache(ClassLoaderFactory classLoaderFactory) {
-        this.classLoaderFactory = classLoaderFactory;
+    public MethodInvocationContextCache(ClassLoaderFactory classLoaderFactory, Duration timeout) {
+        cache = CacheBuilder.newBuilder()
+                .expireAfterAccess(timeout)
+                .build(new CacheLoader<ApiResource, MethodInvocationContext>() {
+                    @Override
+                    public MethodInvocationContext load(@Nonnull ApiResource apiResource) {
+                        return MethodInvocationContextBuilder
+                                .start(classLoaderFactory)
+                                .withApiResource(apiResource)
+                                .build();
+                    }
+                });
     }
 
     @Override
     public MethodInvocationContext getMethodInvocationContext(ApiResource apiResource) {
-        return cache.computeIfAbsent(apiResource, key -> MethodInvocationContextBuilder.start(classLoaderFactory).withApiResource(key).build());
+        return cache.getUnchecked(apiResource);
     }
 }

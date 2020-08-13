@@ -17,10 +17,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.concurrent.Executors;
 
 public class LambdaProxy {
     public static final int PORT = 3000;
+    public static final Duration INSTANCE_TIMEOUT = Duration.ofMinutes(5);
 
     public static final String LAMBDA_PROXY = "lambdaProxy";
     public static final String TEMPLATE_YAML = "template.yaml";
@@ -58,7 +60,7 @@ public class LambdaProxy {
         SamApiDescription apiDescription = new SamApiDescription(samTemplate, projectPath);
         LambdaClassLoaderFactory classLoaderFactory = new LambdaClassLoaderFactory(new SamArtifactResolver(rootPath));
         DefaultLambdaMethodInvoker lambdaMethodInvoker = new DefaultLambdaMethodInvoker();
-        MethodInvocationContextCache methodInvocationContextCache = new MethodInvocationContextCache(classLoaderFactory);
+        MethodInvocationContextCache methodInvocationContextCache = new MethodInvocationContextCache(classLoaderFactory, INSTANCE_TIMEOUT);
 
         return new LambdaProxyServlet(lambdaMethodInvoker, methodInvocationContextCache, getCorsSettings(samTemplate), apiDescription.getApiMethods());
     }
