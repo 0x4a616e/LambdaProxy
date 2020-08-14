@@ -1,7 +1,8 @@
-![Maven Build](https://github.com/0x4a616e/LambdaProxy/workflows/Maven%20Build/badge.svg?branch=master)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/d1f460ec6cc24210b281d0c3da8ef385)](https://www.codacy.com/manual/0x4a616e/LambdaProxy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=0x4a616e/LambdaProxy&amp;utm_campaign=Badge_Grade)
 
 # LambdaProxy
+
+![Maven Build](https://github.com/0x4a616e/LambdaProxy/workflows/Maven%20Build/badge.svg?branch=master)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/d1f460ec6cc24210b281d0c3da8ef385)](https://www.codacy.com/manual/0x4a616e/LambdaProxy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=0x4a616e/LambdaProxy&amp;utm_campaign=Badge_Grade)
 
 LambdaProxy is a tool to for starting a local API that redirects to Lambda functions as specified in a SAM template file.
 
