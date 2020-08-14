@@ -1,3 +1,5 @@
+![Maven Build](https://github.com/0x4a616e/LambdaProxy/workflows/Maven%20Build/badge.svg?branch=master)
+
 # LambdaProxy
 
 LambdaProxy is a tool to for starting a local API that redirects to Lambda functions as specified in a SAM template file.
