@@ -10,9 +10,9 @@ Call your java based lambda functions within milliseconds via HTTP API with on-t
 
 _LambdaProxy_ launches a tomcat servlet that reads the API description from your `template.yaml`. When it receives
 an HTTP request, it calls the respective lambda function directly by passing the required event. Each lambda function is loaded in its
-own isolated ClassLoader so there is minimum interference between different lambda function or with _LambdaProxy_ itself.
+own isolated ClassLoader so there is minimum interference between different lambda functions or with _LambdaProxy_ itself.
 
-Like when executing lambda functions in AWS, each lambda instance is kept alive until wasn't used for at least five minutes,
+Like when executing lambda functions in AWS, each lambda instance is kept alive until it wasn't used for at least five minutes,
 resulting in very short response times of your API. As _LambdaProxy_ is just a regular Java servlet, you can debug your Lambdas at any point
 in time by using the remote debugger agent.
 
