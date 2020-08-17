@@ -1,4 +1,4 @@
-package de.jangassen.lambda.yaml;
+package de.jangassen.lambda.parser.yaml;
 // Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT
 
@@ -26,18 +26,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.yaml.snakeyaml.constructor.AbstractConstruct;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.error.YAMLException;
-import org.yaml.snakeyaml.nodes.MappingNode;
-import org.yaml.snakeyaml.nodes.Node;
-import org.yaml.snakeyaml.nodes.ScalarNode;
-import org.yaml.snakeyaml.nodes.SequenceNode;
-import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.nodes.*;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Allows snakeyaml to parse YAML templates that contain short forms of
@@ -77,7 +73,7 @@ public class IntrinsicsYamlConstructor extends Constructor {
     }
 
     private void addIntrinsic(String tag, boolean attachFnPrefix, boolean forceSequenceValue) {
-        this.yamlConstructors.put(new Tag("!" + tag), getConstructFunction(attachFnPrefix, forceSequenceValue));
+        yamlConstructors.put(new Tag("!" + tag), getConstructFunction(attachFnPrefix, forceSequenceValue));
     }
 
     protected ConstructFunction getConstructFunction(boolean attachFnPrefix, boolean forceSequenceValue) {
@@ -93,6 +89,7 @@ public class IntrinsicsYamlConstructor extends Constructor {
             this.forceSequenceValue = forceSequenceValue;
         }
 
+        @Override
         public Object construct(Node node) {
             String key = node.getTag().getValue().substring(1);
             String prefix = attachFnPrefix ? "Fn::" : "";

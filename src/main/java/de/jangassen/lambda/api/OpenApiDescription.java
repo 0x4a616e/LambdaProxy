@@ -1,7 +1,7 @@
 package de.jangassen.lambda.api;
 
+import de.jangassen.lambda.parser.yaml.SamTemplate;
 import de.jangassen.lambda.util.ResourceUtils;
-import de.jangassen.lambda.yaml.SamTemplate;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;

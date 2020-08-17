@@ -26,12 +26,14 @@ Resources:
       Environment:
         Variables:
           JAVA_TOOL_OPTIONS: !Ref Path
+      Description: !Join [ " ", [ "just", "a", "test", !Sub "${Path}" ] ]
       Events:
         HttpPost:
           Type: Api
           Properties:
             Path: !Sub '/DynamoDBOperations/{id}'
             Method: post
+
   IncludeApi:
     Type: AWS::Serverless::Api
     CodeUri: my-code

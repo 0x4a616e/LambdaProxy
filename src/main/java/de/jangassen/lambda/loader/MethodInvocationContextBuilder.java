@@ -4,6 +4,7 @@ import com.amazonaws.serverless.proxy.model.AwsProxyRequest;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import de.jangassen.lambda.api.ApiResource;
+import de.jangassen.lambda.exception.LambdaInvocationException;
 
 import java.lang.reflect.Method;
 
@@ -32,7 +33,7 @@ public class MethodInvocationContextBuilder {
                 return build(AwsProxyRequest.class);
             }
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new LambdaInvocationException(e);
         }
     }
 
@@ -55,7 +56,7 @@ public class MethodInvocationContextBuilder {
         try {
             return handlerClass.newInstance();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new LambdaInvocationException(e);
         }
     }
 

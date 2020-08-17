@@ -1,10 +1,10 @@
 package de.jangassen.lambda.api;
 
-import de.jangassen.lambda.OpenApiParser;
+import de.jangassen.lambda.parser.OpenApiParser;
+import de.jangassen.lambda.parser.yaml.SamTemplate;
 import de.jangassen.lambda.util.EventUtils;
 import de.jangassen.lambda.util.ParameterUtils;
 import de.jangassen.lambda.util.ResourceUtils;
-import de.jangassen.lambda.yaml.SamTemplate;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -69,16 +69,15 @@ public class SamApiDescription implements ApiDescription {
     }
 
     private List<ApiMethod> getOpenApiMethods(SamTemplate.Resource resource) {
-        if (ObjectUtils.isEmpty(resource.Properties.Events)) {
-            if (!ObjectUtils.isEmpty(resource.Properties.DefinitionBody)) {
-                Object fnTransform = resource.Properties.DefinitionBody.get(FN_TRANSFORM);
-                if (fnTransform instanceof Map) {
-                    String name = (String) ((Map<?, ?>) fnTransform).get(NAME);
-                    Object parameters = ((Map<?, ?>) fnTransform).get(PARAMETERS);
-                    if (AWS_INCLUDE.equals(name) && parameters instanceof Map) {
-                        String location = getLocation(((Map<?, ?>) parameters).get(LOCATION));
-                        return getOpenApiMethods(location);
-                    }
+        if (ObjectUtils.isEmpty(resource.Properties.Events)
+                && !ObjectUtils.isEmpty(resource.Properties.DefinitionBody)) {
+            Object fnTransform = resource.Properties.DefinitionBody.get(FN_TRANSFORM);
+            if (fnTransform instanceof Map) {
+                String name = (String) ((Map<?, ?>) fnTransform).get(NAME);
+                Object parameters = ((Map<?, ?>) fnTransform).get(PARAMETERS);
+                if (AWS_INCLUDE.equals(name) && parameters instanceof Map) {
+                    String location = getLocation(((Map<?, ?>) parameters).get(LOCATION));
+                    return getOpenApiMethods(location);
                 }
             }
         }

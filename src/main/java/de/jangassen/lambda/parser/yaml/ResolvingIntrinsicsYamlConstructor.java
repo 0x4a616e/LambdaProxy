@@ -1,6 +1,6 @@
-package de.jangassen.lambda.yaml;
+package de.jangassen.lambda.parser.yaml;
 
-import de.jangassen.lambda.util.ParameterUtils;
+import de.jangassen.lambda.parser.intrinsics.Intrinsic;
 import org.yaml.snakeyaml.nodes.Node;
 
 import java.util.Collections;
@@ -8,20 +8,11 @@ import java.util.Map;
 
 public class ResolvingIntrinsicsYamlConstructor extends IntrinsicsYamlConstructor {
 
-    private final Map<String, String> parameters;
+    private final Map<String, Intrinsic> intrinsics;
 
-    public ResolvingIntrinsicsYamlConstructor(Class<?> clazz, Map<String, Object> preparsedObject) {
+    public ResolvingIntrinsicsYamlConstructor(Class<?> clazz, Map<String, Intrinsic> intrinsics) {
         super(clazz);
-        parameters = getParameters(preparsedObject);
-    }
-
-    private Map<String, String> getParameters(Map<String, Object> preparsedObject) {
-        Object parameters = preparsedObject.get("Parameters");
-        if (parameters instanceof Map) {
-            return ParameterUtils.getParameters((Map<?, ?>) parameters);
-        }
-
-        return Collections.emptyMap();
+        this.intrinsics = intrinsics;
     }
 
     @Override
@@ -39,12 +30,9 @@ public class ResolvingIntrinsicsYamlConstructor extends IntrinsicsYamlConstructo
             String key = node.getTag().getValue().substring(1);
             Object value = constructIntrinsicValueObject(node);
 
-            if (value instanceof String) {
-                if ("Ref".equals(key)) {
-                    return parameters.get(value);
-                } else if ("Sub".equals(key)) {
-                    return ParameterUtils.resolve((String) value, parameters);
-                }
+            Intrinsic intrinsic = intrinsics.get(key);
+            if (intrinsic != null) {
+                return intrinsic.apply(value);
             }
 
             String prefix = attachFnPrefix ? "Fn::" : "";

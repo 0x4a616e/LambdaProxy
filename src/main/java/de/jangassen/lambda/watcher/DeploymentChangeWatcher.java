@@ -1,5 +1,7 @@
 package de.jangassen.lambda.watcher;
 
+import de.jangassen.lambda.exception.ChangeWatcherException;
+
 import java.io.IOException;
 import java.nio.file.*;
 
@@ -31,7 +33,7 @@ public class DeploymentChangeWatcher implements Runnable {
                 }
             } while (wk.reset());
         } catch (InterruptedException | IOException e) {
-            throw new RuntimeException(e);
+            throw new ChangeWatcherException(e);
         }
     }
 }

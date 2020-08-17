@@ -1,6 +1,7 @@
 package de.jangassen.lambda.loader;
 
 import de.jangassen.lambda.api.ApiResource;
+import de.jangassen.lambda.exception.LambdaInvocationException;
 import de.jangassen.lambda.lambda.LambdaProxyContext;
 
 public class LambdaClassLoaderFactory implements ClassLoaderFactory {
@@ -17,7 +18,7 @@ public class LambdaClassLoaderFactory implements ClassLoaderFactory {
             lambdaClassLoader.addClass(LambdaProxyContext.class);
             return lambdaClassLoader;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new LambdaInvocationException(e);
         }
     }
 }

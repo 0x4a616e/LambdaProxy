@@ -1,9 +1,8 @@
-package de.jangassen.lambda.yaml;
+package de.jangassen.lambda.parser.yaml;
 
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("unused")
 public class SamTemplate {
     public String Transform;
     public String AWSTemplateFormatVersion;

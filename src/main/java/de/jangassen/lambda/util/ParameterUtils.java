@@ -1,6 +1,6 @@
 package de.jangassen.lambda.util;
 
-import de.jangassen.lambda.yaml.SamTemplate;
+import de.jangassen.lambda.parser.yaml.SamTemplate;
 import org.apache.commons.text.StringSubstitutor;
 
 import java.util.AbstractMap;

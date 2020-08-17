@@ -2,7 +2,9 @@ package de.jangassen.lambda;
 
 import de.jangassen.lambda.api.ApiMethod;
 import de.jangassen.lambda.api.OpenApiDescription;
-import de.jangassen.lambda.yaml.SamTemplate;
+import de.jangassen.lambda.parser.OpenApiParser;
+import de.jangassen.lambda.parser.TemplateParser;
+import de.jangassen.lambda.parser.yaml.SamTemplate;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
