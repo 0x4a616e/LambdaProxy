@@ -1,10 +1,9 @@
-package de.jangassen.lambda;
+package de.jangassen.lambda.parser;
 
 import de.jangassen.lambda.api.ApiDescription;
 import de.jangassen.lambda.api.ApiInvocation;
 import de.jangassen.lambda.api.ApiMethod;
 import de.jangassen.lambda.api.SamApiDescription;
-import de.jangassen.lambda.parser.TemplateParser;
 import de.jangassen.lambda.parser.yaml.SamTemplate;
 import de.jangassen.lambda.util.ApiMethodUtils;
 import org.junit.jupiter.api.BeforeEach;

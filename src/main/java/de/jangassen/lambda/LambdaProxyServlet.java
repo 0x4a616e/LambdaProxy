@@ -49,8 +49,10 @@ class LambdaProxyServlet extends HttpServlet {
         if (!requestEvent.isPresent() && cors != null && StringUtils.equalsIgnoreCase(req.getMethod(), HttpMethod.OPTIONS)) {
             addCorsHeaders(resp);
             resp.setStatus(HttpStatus.SC_OK);
+        } else if (requestEvent.isPresent()) {
+            handleRequest(req, resp, requestEvent.get());
         } else {
-            requestEvent.ifPresent(event -> handleRequest(req, resp, event));
+            resp.setStatus(HttpStatus.SC_NOT_FOUND);
         }
     }
 

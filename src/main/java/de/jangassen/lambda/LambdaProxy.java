@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -56,13 +55,11 @@ public class LambdaProxy {
 
         Path templateFile = getTemplateFile(rootPath);
 
-        wrapper = Tomcat.addServlet(context, LAMBDA_PROXY, getLambdaServlet(rootPath, templateFile));
+        wrapper = Tomcat.addServlet(context, LAMBDA_PROXY, getLambdaServlet(rootPath, templateParser.parse(templateFile)));
         context.addServletMappingDecoded("/*", LAMBDA_PROXY);
     }
 
-    private LambdaProxyServlet getLambdaServlet(Path rootPath, Path templateFile) throws FileNotFoundException {
-        SamTemplate samTemplate = templateParser.parse(templateFile);
-
+    LambdaProxyServlet getLambdaServlet(Path rootPath, SamTemplate samTemplate) {
         SamApiDescription apiDescription = new SamApiDescription(samTemplate, projectPath);
         LambdaClassLoaderFactory classLoaderFactory = new LambdaClassLoaderFactory(new SamArtifactResolver(rootPath));
         DefaultLambdaMethodInvoker lambdaMethodInvoker = new DefaultLambdaMethodInvoker();
