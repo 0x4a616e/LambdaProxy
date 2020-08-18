@@ -114,7 +114,7 @@ public class LambdaProxy {
     }
 
     private static void startChangeWatcher(Path samBuildPath, LambdaProxy lambdaProxy) {
-        DeploymentChangeWatcher deploymentChangeWatcher = new DeploymentChangeWatcher(samBuildPath, () -> {
+        DeploymentChangeWatcher deploymentChangeWatcher = new DeploymentChangeWatcher(samBuildPath, (path) -> {
             try {
                 lambdaProxy.deploy(samBuildPath);
             } catch (IOException e) {
