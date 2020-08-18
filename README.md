@@ -29,21 +29,20 @@ You can then run _LambdaProxy_ by providing the directory of your build lambda f
  
      java -jar ./target/LambdaProxy-1.0-SNAPSHOT.jar ~/Workspace/my-lambda-function
      
-If you want to debug your lambda function, add the remote debugger agent:
- 
+ If you want to debug your lambda function, add the remote debugger agent:
+  
     java -agentlib:jdwp=transport=dt_socket,server=y,address=5858,suspend=n -jar ./target/LambdaProxy-1.0-SNAPSHOT.jar ~/Workspace/my-lambda-function
 
-When you rebuild you lambda function, `LambdaProxy` will pick up the changes automatically and reload the API.
-
+When you rebuild your lambda function, `LambdaProxy` will automatically pick up the changes and reload the API.
 
 ## Comparison to `sam local start-api`
 
 `sam local start-api` is great, but it has a few shortcomings: First of all, it is comparably slow. Whenever a new API resource
 is called `sam local start-api` spins up a new Docker container to invoke the requested function. As a result, invoking
-a single API method can require about a second, even on properly equipped developer machines. If you're using the
-local API e.g. to test a frontend application that performs a larger amount of API calls, this can become a bit annoying.
+a single API method can require about a second, even on adequately equipped developer machines. If you’re using the
+local API e.g., to test a frontend application that performs a substantial amount of API calls, this can become a bit annoying.
 
-The second shortcoming is step-by-step debugging. You can enable step-by-step debugging using the `-d` flag, but this will
-cause `sam` to wait on every single API invocation until a debugger is attached. So again if you're working on a frontend
+The second shortcoming is the step-by-step debugging. You can enable step-by-step debugging using the `-d` flag, but this will
+cause `sam` to wait on every single API invocation until a debugger is attached. So again, if you’re working on a frontend
 application that performs various API requests, this can quickly become tedious. Unlike debugging a regular Java
-application, you cannot just let your application run and just put a breakpoint in on demand during testing.
+application, you cannot just let your application run and just put a breakpoint in on-demand during testing.
