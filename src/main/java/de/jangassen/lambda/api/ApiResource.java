@@ -1,5 +1,6 @@
 package de.jangassen.lambda.api;
 
+import de.jangassen.lambda.util.Generated;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
@@ -34,6 +35,7 @@ public class ApiResource {
     }
 
     @Override
+    @Generated
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -48,6 +50,7 @@ public class ApiResource {
     }
 
     @Override
+    @Generated
     public int hashCode() {
         return Objects.hash(resourceName, codeUri, handler);
     }

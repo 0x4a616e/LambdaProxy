@@ -1,5 +1,7 @@
 package de.jangassen.lambda.api;
 
+import de.jangassen.lambda.util.Generated;
+
 import java.util.StringJoiner;
 
 public class ApiMethod extends ApiResource {
@@ -25,6 +27,7 @@ public class ApiMethod extends ApiResource {
     }
 
     @Override
+    @Generated
     public String toString() {
         return new StringJoiner(", ", ApiMethod.class.getSimpleName() + "[", "]")
                 .add("resourceName='" + resourceName + "'")

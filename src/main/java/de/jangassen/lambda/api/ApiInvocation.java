@@ -1,5 +1,6 @@
 package de.jangassen.lambda.api;
 
+import de.jangassen.lambda.util.Generated;
 import org.springframework.web.util.pattern.PathPattern;
 
 import java.util.StringJoiner;
@@ -30,6 +31,7 @@ public class ApiInvocation extends ApiResource {
     }
 
     @Override
+    @Generated
     public String toString() {
         return new StringJoiner(", ", ApiInvocation.class.getSimpleName() + "[", "]")
                 .add("path='" + path + "'")
