@@ -16,9 +16,15 @@ public class SamArtifactResolver implements ArtifactResolver {
     public static final String LIB = "lib";
 
     private final Path rootPath;
+    private final ThrowingFunction<Path, Stream<Path>> listFiles;
 
     public SamArtifactResolver(Path rootPath) {
+        this(rootPath, Files::list);
+    }
+
+    SamArtifactResolver(Path rootPath, ThrowingFunction<Path, Stream<Path>> listFiles) {
         this.rootPath = rootPath;
+        this.listFiles = listFiles;
     }
 
     @Override
@@ -31,18 +37,23 @@ public class SamArtifactResolver implements ArtifactResolver {
     }
 
     private List<URL> getLibs(Path libPath) {
-        try (Stream<Path> files = Files.list(libPath)) {
-            return files.map(this::toURL).collect(Collectors.toList());
+        try (Stream<Path> files = listFiles.invoke(libPath)) {
+            return files.map(SamArtifactResolver::toURL).collect(Collectors.toList());
         } catch (IOException e) {
             throw new LambdaInvocationException(e);
         }
     }
 
-    private URL toURL(Path path) {
+    static URL toURL(Path path) {
         try {
             return path.toUri().toURL();
         } catch (MalformedURLException e) {
             throw new LambdaInvocationException(e);
         }
+    }
+
+    @FunctionalInterface
+    interface ThrowingFunction<P, R> {
+        R invoke(P p) throws IOException;
     }
 }
