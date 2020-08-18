@@ -13,6 +13,8 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,6 +24,9 @@ import java.time.Duration;
 import java.util.concurrent.Executors;
 
 public class LambdaProxy {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LambdaProxy.class);
+
     public static final int PORT = 3000;
     public static final Duration INSTANCE_TIMEOUT = Duration.ofMinutes(5);
 
@@ -83,7 +88,7 @@ public class LambdaProxy {
             tomcat.start();
             tomcat.getServer().await();
         } catch (LifecycleException e) {
-            e.printStackTrace();
+            LOGGER.error("Unable to start servlet", e);
         }
     }
 
@@ -116,7 +121,7 @@ public class LambdaProxy {
             try {
                 lambdaProxy.deploy(samBuildPath);
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error("Error while watching directory '{}': {}", samBuildPath, e);
             }
         });
         Executors.newSingleThreadExecutor().submit(deploymentChangeWatcher);
