@@ -32,7 +32,10 @@ public class DeploymentChangeWatcher implements Runnable {
                     System.out.println("API reloaded.");
                 }
             } while (wk.reset());
-        } catch (InterruptedException | IOException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ChangeWatcherException(e);
+        } catch (IOException e) {
             throw new ChangeWatcherException(e);
         }
     }
