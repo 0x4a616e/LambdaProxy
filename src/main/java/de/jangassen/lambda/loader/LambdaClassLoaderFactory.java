@@ -46,7 +46,7 @@ public class LambdaClassLoaderFactory implements ClassLoaderFactory, AutoCloseab
 
     @Override
     public void close() {
-        classLoaders.forEach(this::close);
+        new HashSet<>(classLoaders).forEach(this::close);
         classLoaders.clear();
     }
 }
