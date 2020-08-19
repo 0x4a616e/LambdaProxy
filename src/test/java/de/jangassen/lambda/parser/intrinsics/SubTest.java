@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SubTest {
     @Test
-    public void TestSub() {
+    public void testSub() {
         String result = new Sub(Collections.singletonMap("param", "test")).apply("just a ${param}");
 
         assertEquals("just a test", result);

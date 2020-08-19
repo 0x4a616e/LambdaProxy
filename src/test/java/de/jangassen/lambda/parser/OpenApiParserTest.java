@@ -4,7 +4,6 @@ import de.jangassen.lambda.api.ApiMethod;
 import de.jangassen.lambda.api.OpenApiDescription;
 import de.jangassen.lambda.parser.yaml.SamTemplate;
 import io.swagger.v3.oas.models.OpenAPI;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -29,8 +28,8 @@ public class OpenApiParserTest {
 
         List<ApiMethod> apiMethods = new OpenApiDescription(openAPI, samTemplate).getApiMethods();
 
-        Assertions.assertEquals(1, apiMethods.size());
-        Assertions.assertEquals("LambdaFunctionOverHttps", apiMethods.get(0).getResourceName());
+        assertEquals(1, apiMethods.size());
+        assertEquals("LambdaFunctionOverHttps", apiMethods.get(0).getResourceName());
         assertEquals("/test/{id}", apiMethods.get(0).getPathPattern());
         assertEquals("index.handler::handleRequest", apiMethods.get(0).getHandler());
         assertEquals("POST", apiMethods.get(0).getMethod());

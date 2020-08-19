@@ -1,4 +1,3 @@
-
 # LambdaProxy
 
 ![Maven Build](https://github.com/0x4a616e/LambdaProxy/workflows/Maven%20Build/badge.svg?branch=master)
