@@ -25,8 +25,8 @@ public class SamTemplate {
         return aWSTemplateFormatVersion;
     }
 
-    public void setAWSTemplateFormatVersion(String AWSTemplateFormatVersion) {
-        aWSTemplateFormatVersion = AWSTemplateFormatVersion;
+    public void setAWSTemplateFormatVersion(String aWSTemplateFormatVersion) {
+        this.aWSTemplateFormatVersion = aWSTemplateFormatVersion;
     }
 
     public String getDescription() {
