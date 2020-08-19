@@ -10,6 +10,6 @@ public final class ResourceUtils {
     }
 
     public static boolean isJava8Runtime(SamTemplate.Resource resource) {
-        return StringUtils.equalsIgnoreCase(JAVA_8, resource.Properties.Runtime);
+        return StringUtils.equalsIgnoreCase(JAVA_8, resource.getProperties().getRuntime());
     }
 }

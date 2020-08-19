@@ -68,9 +68,9 @@ public class OpenApiDescription {
         Matcher matcher = lambdaNamePattern.matcher(uri);
         if (matcher.matches()) {
             String resourceName = matcher.group(1);
-            SamTemplate.Resource resource = samTemplate.Resources.get(resourceName);
+            SamTemplate.Resource resource = samTemplate.getResources().get(resourceName);
             if (resource != null && ResourceUtils.isJava8Runtime(resource)) {
-                return Optional.of(new ApiMethod(resourceName, resource.Properties.CodeUri, resource.Properties.Handler, pathPattern, e.getKey()));
+                return Optional.of(new ApiMethod(resourceName, resource.getProperties().getCodeUri(), resource.getProperties().getHandler(), pathPattern, e.getKey()));
             }
         }
 

@@ -55,8 +55,8 @@ class LambdaProxyServletTest {
         ApiMethod apiMethod = new ApiMethod("resource", "codeUri", "handler", "/path/{id}", HttpMethod.GET);
 
         SamTemplate.Cors cors = new SamTemplate.Cors();
-        cors.AllowHeaders = "*";
-        cors.AllowMethods = "GET";
+        cors.setAllowHeaders("*");
+        cors.setAllowMethods("GET");
 
         List<ApiMethod> apiMethods = Collections.singletonList(apiMethod);
 
@@ -78,8 +78,8 @@ class LambdaProxyServletTest {
         ApiMethod apiMethod = new ApiMethod("resource", "codeUri", "handler", "/path/{id}", HttpMethod.GET);
 
         SamTemplate.Cors cors = new SamTemplate.Cors();
-        cors.AllowHeaders = "*";
-        cors.AllowMethods = "GET";
+        cors.setAllowHeaders("*");
+        cors.setAllowMethods("GET");
 
         List<ApiMethod> apiMethods = Collections.singletonList(apiMethod);
 

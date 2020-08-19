@@ -13,7 +13,7 @@ public final class ParameterUtils {
     }
 
     public static Map<String, String> getParameters(SamTemplate samTemplate) {
-        return getParameters(samTemplate.Parameters);
+        return getParameters(samTemplate.getParameters());
     }
 
     public static String resolve(String string, SamTemplate samTemplate) {

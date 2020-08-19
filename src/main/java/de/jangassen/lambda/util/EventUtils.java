@@ -10,7 +10,7 @@ public final class EventUtils {
     }
 
     public static boolean isAPIEvent(SamTemplate.Event event) {
-        return StringUtils.equalsIgnoreCase(API, event.Type);
+        return StringUtils.equalsIgnoreCase(API, event.getType());
     }
 
 }

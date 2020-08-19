@@ -22,7 +22,7 @@ public class TemplateParser {
 
     public TemplateParser() {
         representer = new Representer();
-        representer.getPropertyUtils().setSkipMissingProperties(true);
+        representer.setPropertyUtils(new SamPropertyUtils());
 
         preParser = new Yaml(new IntrinsicsYamlConstructor(Map.class), representer);
     }

@@ -83,15 +83,15 @@ public class LambdaProxy {
     }
 
     private static SamTemplate.Cors getCorsSettings(SamTemplate samTemplate) {
-        SamTemplate.Globals globals = samTemplate.Globals;
+        SamTemplate.Globals globals = samTemplate.getGlobals();
         if (globals == null) {
             return null;
         }
-        SamTemplate.Api api = globals.Api;
+        SamTemplate.Api api = globals.getApi();
         if (api == null) {
             return null;
         }
-        return api.Cors;
+        return api.getCors();
     }
 
     public void serve() {

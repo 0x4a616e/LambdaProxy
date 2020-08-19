@@ -41,7 +41,7 @@ class LambdaProxyTest {
         Path projectPath = new File(System.getProperty("user.dir")).toPath();
 
         SamTemplate samTemplate = new SamTemplate();
-        samTemplate.Resources = Collections.emptyMap();
+        samTemplate.setResources(Collections.emptyMap());
 
         LambdaProxyServlet lambdaServlet = LambdaProxy.getLambdaServlet(samTemplate, new LambdaClassLoaderFactory(new SamArtifactResolver(projectPath)), projectPath);
         lambdaServlet.service(req, res);

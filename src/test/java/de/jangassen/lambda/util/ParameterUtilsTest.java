@@ -12,7 +12,7 @@ class ParameterUtilsTest {
     @Test
     void testResolve() {
         SamTemplate samTemplate = new SamTemplate();
-        samTemplate.Parameters = Collections.singletonMap("test", Collections.singletonMap("Default", "123"));
+        samTemplate.setParameters(Collections.singletonMap("test", Collections.singletonMap("Default", "123")));
 
         String resolvedString = ParameterUtils.resolve("Test ${test}", samTemplate);
 

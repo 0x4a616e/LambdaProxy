@@ -41,16 +41,16 @@ public class SamApiDescription implements ApiDescription {
     }
 
     private List<ApiMethod> getApiMethods(SamTemplate samTemplate) {
-        return samTemplate.Resources.entrySet()
+        return samTemplate.getResources().entrySet()
                 .stream()
                 .flatMap(r -> getApiMethods(r.getValue(), r.getKey()))
                 .collect(Collectors.toList());
     }
 
     private Stream<ApiMethod> getApiMethods(SamTemplate.Resource resource, String resourceName) {
-        if (resource.Properties.Events == null && resource.Properties.DefinitionBody != null) {
+        if (resource.getProperties().getEvents() == null && resource.getProperties().getDefinitionBody() != null) {
             return getOpenApiMethods(resource).stream();
-        } else if (resource.Properties.Events != null && ResourceUtils.isJava8Runtime(resource)) {
+        } else if (resource.getProperties().getEvents() != null && ResourceUtils.isJava8Runtime(resource)) {
             return getTemplateMethods(resourceName, resource);
         } else {
             return Stream.empty();
@@ -58,20 +58,20 @@ public class SamApiDescription implements ApiDescription {
     }
 
     private Stream<ApiMethod> getTemplateMethods(String resourceName, SamTemplate.Resource resource) {
-        return resource.Properties.Events.values()
+        return resource.getProperties().getEvents().values()
                 .stream()
                 .filter(EventUtils::isAPIEvent)
                 .map(event -> getApiMethod(resourceName, resource, event));
     }
 
     private ApiMethod getApiMethod(String resourceName, SamTemplate.Resource resource, SamTemplate.Event event) {
-        return new ApiMethod(resourceName, resource.Properties.CodeUri, resource.Properties.Handler, event.Properties.Path, event.Properties.Method);
+        return new ApiMethod(resourceName, resource.getProperties().getCodeUri(), resource.getProperties().getHandler(), event.getProperties().getPath(), event.getProperties().getMethod());
     }
 
     private List<ApiMethod> getOpenApiMethods(SamTemplate.Resource resource) {
-        if (ObjectUtils.isEmpty(resource.Properties.Events)
-                && !ObjectUtils.isEmpty(resource.Properties.DefinitionBody)) {
-            Object fnTransform = resource.Properties.DefinitionBody.get(FN_TRANSFORM);
+        if (ObjectUtils.isEmpty(resource.getProperties().getEvents())
+                && !ObjectUtils.isEmpty(resource.getProperties().getDefinitionBody())) {
+            Object fnTransform = resource.getProperties().getDefinitionBody().get(FN_TRANSFORM);
             if (fnTransform instanceof Map) {
                 String name = (String) ((Map<?, ?>) fnTransform).get(NAME);
                 Object parameters = ((Map<?, ?>) fnTransform).get(PARAMETERS);

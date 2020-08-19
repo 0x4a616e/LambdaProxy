@@ -58,14 +58,14 @@ class LambdaProxyServlet extends HttpServlet {
 
     private void addCorsHeaders(HttpServletResponse resp) {
         if (cors != null) {
-            if (cors.AllowHeaders != null) {
-                resp.addHeader("Access-Control-Allow-Headers", getCorsHeaderValue(cors.AllowHeaders));
+            if (cors.getAllowHeaders() != null) {
+                resp.addHeader("Access-Control-Allow-Headers", getCorsHeaderValue(cors.getAllowHeaders()));
             }
-            if (cors.AllowMethods != null) {
-                resp.addHeader("Access-Control-Allow-Methods", getCorsHeaderValue(cors.AllowMethods));
+            if (cors.getAllowMethods() != null) {
+                resp.addHeader("Access-Control-Allow-Methods", getCorsHeaderValue(cors.getAllowMethods()));
             }
-            if (cors.AllowOrigin != null) {
-                resp.addHeader("Access-Control-Allow-Origin", getCorsHeaderValue(cors.AllowOrigin));
+            if (cors.getAllowOrigin() != null) {
+                resp.addHeader("Access-Control-Allow-Origin", getCorsHeaderValue(cors.getAllowOrigin()));
             }
         }
     }
