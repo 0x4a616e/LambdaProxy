@@ -7,14 +7,14 @@ import java.util.stream.Collectors;
 
 public class Join implements Intrinsic {
 
-    public static final String NAME = "Join";
+    public static final String INTRINSIC_NAME = "Join";
 
     @Override
     public Object apply(Object obj) {
         if (obj instanceof List && ((List<?>) obj).size() == 2) {
             String separator = String.valueOf(((List<?>) obj).get(0));
             Object values = ((List<?>) obj).get(1);
-            
+
             if (values instanceof List) {
                 return ((List<?>) values).stream()
                         .map(String::valueOf)
@@ -27,6 +27,6 @@ public class Join implements Intrinsic {
 
     @Override
     public String name() {
-        return NAME;
+        return INTRINSIC_NAME;
     }
 }

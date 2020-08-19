@@ -27,13 +27,17 @@ public class MethodInvocationContextBuilder {
 
     public MethodInvocationContext build() {
         try {
-            try {
-                return build(APIGatewayProxyRequestEvent.class);
-            } catch (ReflectiveOperationException e) {
-                return build(AwsProxyRequest.class);
-            }
+            return buildMatchingContext();
         } catch (ReflectiveOperationException e) {
             throw new LambdaInvocationException(e);
+        }
+    }
+
+    private MethodInvocationContext buildMatchingContext() throws ClassNotFoundException, NoSuchMethodException {
+        try {
+            return build(APIGatewayProxyRequestEvent.class);
+        } catch (ReflectiveOperationException e) {
+            return build(AwsProxyRequest.class);
         }
     }
 
@@ -54,7 +58,7 @@ public class MethodInvocationContextBuilder {
 
     protected Object getHandlerInstance(Class<?> handlerClass) {
         try {
-            return handlerClass.newInstance();
+            return handlerClass.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             throw new LambdaInvocationException(e);
         }

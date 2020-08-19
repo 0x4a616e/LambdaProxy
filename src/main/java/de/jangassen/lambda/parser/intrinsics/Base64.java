@@ -7,8 +7,8 @@ import java.nio.charset.StandardCharsets;
 
 public class Base64 implements Intrinsic {
 
-    public static final String NAME = "Base64";
-    
+    public static final String INTRINSIC_NAME = "Base64";
+
     private final Charset charset;
 
     public Base64() {
@@ -31,6 +31,6 @@ public class Base64 implements Intrinsic {
 
     @Override
     public String name() {
-        return NAME;
+        return INTRINSIC_NAME;
     }
 }

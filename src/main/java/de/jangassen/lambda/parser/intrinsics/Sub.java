@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class Sub implements Intrinsic {
 
-    public static final String NAME = "Sub";
+    public static final String INTRINSIC_NAME = "Sub";
 
     private final Map<String, String> parameters;
 
@@ -24,6 +24,6 @@ public class Sub implements Intrinsic {
 
     @Override
     public String name() {
-        return NAME;
+        return INTRINSIC_NAME;
     }
 }

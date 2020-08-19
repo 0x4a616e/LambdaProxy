@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class Ref implements Intrinsic {
 
-    public static final String NAME = "Ref";
+    public static final String INTRINSIC_NAME = "Ref";
 
     private final Map<String, String> parameters;
 
@@ -22,6 +22,6 @@ public class Ref implements Intrinsic {
 
     @Override
     public String name() {
-        return NAME;
+        return INTRINSIC_NAME;
     }
 }

@@ -1,6 +1,5 @@
 package de.jangassen.lambda.watcher;
 
-import de.jangassen.lambda.LambdaProxy;
 import de.jangassen.lambda.exception.ChangeWatcherException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +9,7 @@ import java.nio.file.*;
 
 public class DeploymentChangeWatcher implements Runnable {
 
-    private final Logger logger = LoggerFactory.getLogger(LambdaProxy.class);
+    private final Logger logger = LoggerFactory.getLogger(DeploymentChangeWatcher.class);
 
     private final DeploymentChangeHandler deploymentChangeHandler;
     private final Path watchPath;

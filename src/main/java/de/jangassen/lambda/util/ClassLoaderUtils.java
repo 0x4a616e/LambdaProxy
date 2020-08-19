@@ -8,6 +8,10 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public final class ClassLoaderUtils {
+
+    private ClassLoaderUtils() {
+    }
+
     public static Object moveToClassLoader(ClassLoader classLoader, Object object) {
         DeepCloner deepCloner = new DeepCloner(classLoader);
         return deepCloner.clone(object);
