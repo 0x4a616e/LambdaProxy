@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -39,6 +40,7 @@ public class LambdaProxy {
     private final Path projectPath;
 
     private Wrapper wrapper;
+    private LambdaClassLoaderFactory classLoaderFactory;
 
     public LambdaProxy(Path projectPath) {
         this.projectPath = projectPath;
@@ -49,26 +51,38 @@ public class LambdaProxy {
     }
 
     public void deploy(Path rootPath) throws IOException {
-        if (wrapper != null) {
-            context.removeChild(wrapper);
-        }
+        cleanupPreviousDeployment();
 
-        Path templateFile = getTemplateFile(rootPath);
-
-        wrapper = Tomcat.addServlet(context, LAMBDA_PROXY, getLambdaServlet(rootPath, templateParser.parse(templateFile)));
+        classLoaderFactory = new LambdaClassLoaderFactory(new SamArtifactResolver(rootPath));
+        LambdaProxyServlet lambdaServlet = getLambdaServlet(getSamTemplate(rootPath), classLoaderFactory, projectPath);
+        wrapper = Tomcat.addServlet(context, LAMBDA_PROXY, lambdaServlet);
         context.addServletMappingDecoded("/*", LAMBDA_PROXY);
     }
 
-    LambdaProxyServlet getLambdaServlet(Path rootPath, SamTemplate samTemplate) {
+    private SamTemplate getSamTemplate(Path rootPath) throws FileNotFoundException {
+        Path templateFile = getTemplateFile(rootPath);
+        return templateParser.parse(templateFile);
+    }
+
+    private void cleanupPreviousDeployment() {
+        if (wrapper != null) {
+            context.removeChild(wrapper);
+        }
+        if (classLoaderFactory != null) {
+            classLoaderFactory.close();
+            classLoaderFactory = null;
+        }
+    }
+
+    static LambdaProxyServlet getLambdaServlet(SamTemplate samTemplate, LambdaClassLoaderFactory classLoaderFactory, Path projectPath) {
         SamApiDescription apiDescription = new SamApiDescription(samTemplate, projectPath);
-        LambdaClassLoaderFactory classLoaderFactory = new LambdaClassLoaderFactory(new SamArtifactResolver(rootPath));
         DefaultLambdaMethodInvoker lambdaMethodInvoker = new DefaultLambdaMethodInvoker();
         MethodInvocationContextCache methodInvocationContextCache = new MethodInvocationContextCache(classLoaderFactory, INSTANCE_TIMEOUT);
 
         return new LambdaProxyServlet(lambdaMethodInvoker, methodInvocationContextCache, getCorsSettings(samTemplate), apiDescription.getApiMethods());
     }
 
-    private SamTemplate.Cors getCorsSettings(SamTemplate samTemplate) {
+    private static SamTemplate.Cors getCorsSettings(SamTemplate samTemplate) {
         SamTemplate.Globals globals = samTemplate.Globals;
         if (globals == null) {
             return null;

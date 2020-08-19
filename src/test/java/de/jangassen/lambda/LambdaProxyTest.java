@@ -1,5 +1,7 @@
 package de.jangassen.lambda;
 
+import de.jangassen.lambda.loader.LambdaClassLoaderFactory;
+import de.jangassen.lambda.loader.SamArtifactResolver;
 import de.jangassen.lambda.parser.yaml.SamTemplate;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
@@ -27,16 +29,21 @@ class LambdaProxyTest {
 
     @Test
     void createInstance() {
+        Path projectPath = new File(System.getProperty("user.dir")).toPath();
+        new LambdaProxy(projectPath);
+    }
+
+    @Test
+    void createServlet() {
         when(req.getPathInfo()).thenReturn("/path/123");
         when(req.getMethod()).thenReturn(HttpMethod.GET);
 
         Path projectPath = new File(System.getProperty("user.dir")).toPath();
-        LambdaProxy lambdaProxy = new LambdaProxy(projectPath);
 
         SamTemplate samTemplate = new SamTemplate();
         samTemplate.Resources = Collections.emptyMap();
 
-        LambdaProxyServlet lambdaServlet = lambdaProxy.getLambdaServlet(projectPath, samTemplate);
+        LambdaProxyServlet lambdaServlet = LambdaProxy.getLambdaServlet(samTemplate, new LambdaClassLoaderFactory(new SamArtifactResolver(projectPath)), projectPath);
         lambdaServlet.service(req, res);
 
         verify(res, times(1)).setStatus(HttpStatus.SC_NOT_FOUND);
