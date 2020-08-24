@@ -7,6 +7,7 @@ import de.jangassen.lambda.loader.MethodInvocationContext;
 import de.jangassen.lambda.loader.MethodInvocationContextProvider;
 import de.jangassen.lambda.parser.yaml.SamTemplate;
 import de.jangassen.lambda.util.ApiMethodUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
@@ -40,7 +41,11 @@ class LambdaProxyServlet extends HttpServlet {
         this.cors = cors;
         this.apiMethods = apiMethods;
 
-        apiMethods.forEach(e -> logger.info("* {}", e));
+        if (ObjectUtils.isEmpty(apiMethods)) {
+            logger.warn("No API methods found.");
+        } else {
+            apiMethods.forEach(e -> logger.info("* {}", e));
+        }
     }
 
     @Override
