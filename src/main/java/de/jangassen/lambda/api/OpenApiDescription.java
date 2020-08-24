@@ -69,7 +69,7 @@ public class OpenApiDescription {
         if (matcher.matches()) {
             String resourceName = matcher.group(1);
             SamTemplate.Resource resource = samTemplate.getResources().get(resourceName);
-            if (resource != null && ResourceUtils.isJava8Runtime(resource)) {
+            if (resource != null && ResourceUtils.isSupportedRuntime(resource)) {
                 return Optional.of(new ApiMethod(resourceName, resource.getProperties().getCodeUri(), resource.getProperties().getHandler(), pathPattern, e.getKey()));
             }
         }

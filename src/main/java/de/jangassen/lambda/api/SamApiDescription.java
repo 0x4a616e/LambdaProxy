@@ -50,7 +50,7 @@ public class SamApiDescription implements ApiDescription {
     private Stream<ApiMethod> getApiMethods(SamTemplate.Resource resource, String resourceName) {
         if (resource.getProperties().getEvents() == null && resource.getProperties().getDefinitionBody() != null) {
             return getOpenApiMethods(resource).stream();
-        } else if (resource.getProperties().getEvents() != null && ResourceUtils.isJava8Runtime(resource)) {
+        } else if (resource.getProperties().getEvents() != null && ResourceUtils.isSupportedRuntime(resource)) {
             return getTemplateMethods(resourceName, resource);
         } else {
             return Stream.empty();
