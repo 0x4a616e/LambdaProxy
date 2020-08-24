@@ -1,6 +1,7 @@
 package de.jangassen.lambda.loader;
 
 import de.jangassen.lambda.api.ApiResource;
+import de.jangassen.lambda.util.PathUtils;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -34,7 +35,7 @@ class LambdaClassLoaderFactoryTest {
         return Arrays.stream(classpathEntries)
                 .map(File::new)
                 .map(File::toPath)
-                .map(SamArtifactResolver::toURL)
+                .map(PathUtils::toURL)
                 .collect(Collectors.toList());
     }
 }

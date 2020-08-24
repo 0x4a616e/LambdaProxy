@@ -1,6 +1,7 @@
 package de.jangassen.lambda.loader;
 
 import de.jangassen.lambda.api.ApiResource;
+import de.jangassen.lambda.util.PathUtils;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -22,7 +23,7 @@ class SamArtifactResolverTest {
 
         List<URL> expectedResources = Stream.of(new File("dir/resource/lib"), new File("dir/resource"))
                 .map(File::toPath)
-                .map(SamArtifactResolver::toURL)
+                .map(PathUtils::toURL)
                 .collect(Collectors.toList());
 
         assertEquals(expectedResources, resolvedResources);
