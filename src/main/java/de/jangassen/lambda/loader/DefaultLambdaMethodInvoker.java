@@ -50,6 +50,7 @@ public class DefaultLambdaMethodInvoker implements LambdaMethodInvoker {
     private Object invokeUsingClassLoader(MethodInvocationContext invocationContext, LambdaProxyContext lambdaProxyContext, Object requestEvent, ClassLoader classLoader) throws IllegalAccessException, InvocationTargetException {
         Object event = ClassLoaderUtils.moveToClassLoader(classLoader, requestEvent);
         Object context = ClassLoaderUtils.moveToClassLoader(classLoader, lambdaProxyContext);
+        Thread.currentThread().setContextClassLoader(classLoader);
         return invocationContext.getMethod().invoke(invocationContext.getInstance(), event, context);
     }
 }
