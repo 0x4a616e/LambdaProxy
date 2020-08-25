@@ -81,13 +81,21 @@ class LambdaProxyServlet extends HttpServlet {
 
     private void handleRequest(HttpServletRequest req, HttpServletResponse resp, ApiInvocation apiInvocation) {
         try {
-            MethodInvocationContext methodInvocationContext = methodInvocationContextProvider.getMethodInvocationContext(apiInvocation);
-            Object result = lambdaMethodInvoker.invokeRequest(req, apiInvocation, methodInvocationContext);
-            sendResponse(resp, getStatusCode(result), getBody(result));
+            Object result = invokeHandler(req, apiInvocation);
+            Integer statusCode = getStatusCode(result);
+            String body = getBody(result);
+
+            logger.info("{} {} {} {} {}", req.getMethod().toUpperCase(), req.getPathInfo(), req.getProtocol(), statusCode, body.length());
+            sendResponse(resp, statusCode, body);
         } catch (Exception e) {
             logger.error("Error handling request.", e);
             sendErrorResponse(resp, e);
         }
+    }
+
+    private Object invokeHandler(HttpServletRequest req, ApiInvocation apiInvocation) throws ReflectiveOperationException, IOException {
+        MethodInvocationContext methodInvocationContext = methodInvocationContextProvider.getMethodInvocationContext(apiInvocation);
+        return lambdaMethodInvoker.invokeRequest(req, apiInvocation, methodInvocationContext);
     }
 
     private String getBody(Object result) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
