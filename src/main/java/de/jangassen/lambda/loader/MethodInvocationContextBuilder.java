@@ -49,7 +49,7 @@ public class MethodInvocationContextBuilder {
         Method handlerMethod = getHandlerMethod(apiResource, handlerClass, parameterClass);
         Object handlerInstance = getHandlerInstance(handlerClass);
 
-        return new MethodInvocationContext(handlerMethod, handlerInstance, classLoader, parameterClass);
+        return new MethodInvocationContext(handlerMethod, handlerInstance, classLoader, parameterClass, new ForkJoinInvocationStrategy(classLoader));
     }
 
     protected ClassLoader getClassLoader(ApiResource apiResource) {

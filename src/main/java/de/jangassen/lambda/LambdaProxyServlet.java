@@ -93,7 +93,7 @@ class LambdaProxyServlet extends HttpServlet {
         }
     }
 
-    private Object invokeHandler(HttpServletRequest req, ApiInvocation apiInvocation) throws ReflectiveOperationException, IOException {
+    private Object invokeHandler(HttpServletRequest req, ApiInvocation apiInvocation) throws IOException {
         MethodInvocationContext methodInvocationContext = methodInvocationContextProvider.getMethodInvocationContext(apiInvocation);
         return lambdaMethodInvoker.invokeRequest(req, apiInvocation, methodInvocationContext);
     }

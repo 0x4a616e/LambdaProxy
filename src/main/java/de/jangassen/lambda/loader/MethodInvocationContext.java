@@ -7,12 +7,14 @@ public class MethodInvocationContext {
     private final Object instance;
     private final ClassLoader classLoader;
     private final Class<?> parameterClass;
+    private final InvocationStrategy invocationStrategy;
 
-    MethodInvocationContext(Method method, Object instance, ClassLoader classLoader, Class<?> parameterClass) {
+    MethodInvocationContext(Method method, Object instance, ClassLoader classLoader, Class<?> parameterClass, InvocationStrategy invocationStrategy) {
         this.method = method;
         this.instance = instance;
         this.classLoader = classLoader;
         this.parameterClass = parameterClass;
+        this.invocationStrategy = invocationStrategy;
     }
 
     public Method getMethod() {
@@ -29,5 +31,9 @@ public class MethodInvocationContext {
 
     public Class<?> getParameterClass() {
         return parameterClass;
+    }
+
+    public InvocationStrategy getInvocationStrategy() {
+        return invocationStrategy;
     }
 }

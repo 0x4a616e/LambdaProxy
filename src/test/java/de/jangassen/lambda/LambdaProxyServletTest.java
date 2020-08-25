@@ -41,7 +41,7 @@ class LambdaProxyServletTest {
     HttpServletResponse res;
 
     @Test
-    void testLambdaProxyServlet() throws IOException, ReflectiveOperationException {
+    void testLambdaProxyServlet() throws IOException {
         StringWriter responseWriter = new StringWriter();
         AwsProxyResponse response = new AwsProxyResponse();
         response.setBody("response");
