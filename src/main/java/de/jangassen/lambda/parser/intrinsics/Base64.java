@@ -1,6 +1,6 @@
 package de.jangassen.lambda.parser.intrinsics;
 
-import de.jangassen.lambda.exception.InvalidIntrinsicValue;
+import de.jangassen.lambda.exception.InvalidIntrinsicValueException;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -26,7 +26,7 @@ public class Base64 implements Intrinsic {
                     .encodeToString(((String) obj).getBytes(charset));
         }
 
-        throw new InvalidIntrinsicValue(String.valueOf(obj));
+        throw new InvalidIntrinsicValueException(String.valueOf(obj));
     }
 
     @Override

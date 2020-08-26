@@ -1,6 +1,6 @@
 package de.jangassen.lambda.parser.intrinsics;
 
-import de.jangassen.lambda.exception.InvalidIntrinsicValue;
+import de.jangassen.lambda.exception.InvalidIntrinsicValueException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,7 +22,7 @@ public class Join implements Intrinsic {
             }
         }
 
-        throw new InvalidIntrinsicValue(String.valueOf(obj));
+        throw new InvalidIntrinsicValueException(String.valueOf(obj));
     }
 
     @Override
