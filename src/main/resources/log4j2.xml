@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%highlight{%level}] %logger{0} [%t] %msg%n"/>
+        </Console>
+        <Console name="ConsoleApiLogger" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%highlight{%level}] %cyan{%msg}%n"/>
+        </Console>
+        <Console name="ConsoleAccessLogger" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%highlight{%level}] %cyan{%msg}%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="de.jangassen.lambda.logger.AccessLogger" level="debug" additivity="false">
+            <AppenderRef ref="ConsoleAccessLogger"/>
+        </Logger>
+        <Logger name="de.jangassen.lambda.logger.ApiLogger" level="debug" additivity="false">
+            <AppenderRef ref="ConsoleApiLogger"/>
+        </Logger>
+        <Logger name="de.jangassen.lambda" level="debug" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Root level="error">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>

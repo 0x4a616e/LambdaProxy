@@ -5,6 +5,8 @@ import de.jangassen.lambda.api.ApiMethod;
 import de.jangassen.lambda.loader.LambdaMethodInvoker;
 import de.jangassen.lambda.loader.MethodInvocationContext;
 import de.jangassen.lambda.loader.MethodInvocationContextProvider;
+import de.jangassen.lambda.logger.AccessLogger;
+import de.jangassen.lambda.logger.ApiLogger;
 import de.jangassen.lambda.parser.yaml.SamTemplate;
 import de.jangassen.lambda.util.ApiMethodUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -44,7 +46,7 @@ class LambdaProxyServlet extends HttpServlet {
         if (ObjectUtils.isEmpty(apiMethods)) {
             logger.warn("No API methods found.");
         } else {
-            apiMethods.forEach(e -> logger.info("* {}", e));
+            ApiLogger.logApiMethods(apiMethods);
         }
     }
 
@@ -85,7 +87,7 @@ class LambdaProxyServlet extends HttpServlet {
             Integer statusCode = getStatusCode(result);
             String body = getBody(result);
 
-            logger.info("{} {} {} {} {}", req.getMethod().toUpperCase(), req.getPathInfo(), req.getProtocol(), statusCode, body.length());
+            AccessLogger.logAccess(req, statusCode, body.length());
             sendResponse(resp, statusCode, body);
         } catch (Exception e) {
             logger.error("Error handling request.", e);
