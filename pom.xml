@@ -13,7 +13,7 @@
         <aws-lambda-java-core.version>1.2.1</aws-lambda-java-core.version>
         <aws-lambda-java-events.version>2.2.7</aws-lambda-java-events.version>
         <aws-lambda-java-log4j2.version>1.2.0</aws-lambda-java-log4j2.version>
-        <tomcat-embed-core.version>8.5.55</tomcat-embed-core.version>
+        <tomcat-embed-core.version>8.5.61</tomcat-embed-core.version>
         <spring-web.version>5.2.6.RELEASE</spring-web.version>
         <commons-lang3.version>3.10</commons-lang3.version>
         <snakeyaml.version>1.26</snakeyaml.version>
