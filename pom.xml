@@ -16,7 +16,7 @@
         <tomcat-embed-core.version>8.5.55</tomcat-embed-core.version>
         <spring-web.version>5.2.6.RELEASE</spring-web.version>
         <commons-lang3.version>3.10</commons-lang3.version>
-        <snakeyaml.version>1.26</snakeyaml.version>
+        <snakeyaml.version>1.32</snakeyaml.version>
         <maven.version>3.6.3</maven.version>
         <log4j.version>2.13.3</log4j.version>
         <slf4j-api.version>1.7.30</slf4j-api.version>
